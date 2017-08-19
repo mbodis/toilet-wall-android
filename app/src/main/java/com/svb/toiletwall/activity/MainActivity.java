@@ -32,6 +32,8 @@ import android.widget.Toast;
 import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.model.ToiletDisplay;
+import com.svb.toiletwall.programs.ProgramIface;
+import com.svb.toiletwall.programs.TestingProgram;
 import com.svb.toiletwall.support.MySupport;
 
 import java.io.IOException;
@@ -67,13 +69,12 @@ public class MainActivity extends AppCompatActivity
 
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
 
+    ProgramIface program;
 
     // #defines for identifying shared types between calling functions
 
     public static final int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     public static final int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
-
-    ToiletDisplay mToiletDisplay;
 
     final BroadcastReceiver blReceiver = new BroadcastReceiver() {
         @Override
@@ -98,9 +99,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+    }
+
+    @Override
     protected void onDestroy() {
         unregisterReceiver(blReceiver);
-        mConnectedThread.cancel();
+        if (mConnectedThread != null) {
+            mConnectedThread.cancel();
+        }
+        if (program != null) {
+            program.onDestroy();
+            program = null;
+        }
         super.onDestroy();
     }
 
@@ -180,17 +193,22 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.startProgram:
-                mToiletDisplay.sendScreenViaBt(mConnectedThread);
+                if (program != null) {
+                    program.onDestroy();
+                    program = null;
+                }
+                //TODO create program by selecting from spinner
+                program = new TestingProgram(2, 2, mConnectedThread);
                 break;
 
             case R.id.scan:
-                if (MySupport.setBluetoothOn(MainActivity.this)){
+                if (MySupport.setBluetoothOn(MainActivity.this)) {
                     mBluetoothStatus.setText("Bluetooth enabled");
                 }
                 break;
 
             case R.id.off:
-                if (MySupport.setBluetoothOff(MainActivity.this)){
+                if (MySupport.setBluetoothOff(MainActivity.this)) {
                     mBluetoothStatus.setText("Bluetooth disabled");
                 }
                 break;
@@ -206,8 +224,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupContent() {
-        mToiletDisplay = new ToiletDisplay(2, 2); // TODO shared prefs + input
-
         mHandler = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 if (msg.what == MESSAGE_READ) {
@@ -291,7 +307,6 @@ public class MainActivity extends AppCompatActivity
                 mBTArrayAdapter.clear(); // clear items
                 mBTAdapter.startDiscovery();
                 Toast.makeText(getApplicationContext(), "Discovery started", Toast.LENGTH_SHORT).show();
-                registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
             } else {
                 Toast.makeText(getApplicationContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
             }

@@ -9,80 +9,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.svb.toiletwall.activity.MainActivity">
 
-
     <LinearLayout
         android:id="@+id/connecting_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="45dp"
         android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:text="RX:"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/readBuffer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="&lt;Read Buffer>" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:text="Status:"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/bluetoothStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="&lt;Bluetooth Status>" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <Button
-                android:id="@+id/scan"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Bluetooth ON" />
-
-            <Button
-                android:id="@+id/off"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Bluetooth OFF" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -151,12 +83,87 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/clear"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/animationPanel1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="clear" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/prev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="prev" />
+
+            <TextView
+                android:id="@+id/animationPage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="1/4" />
+
+            <Button
+                android:id="@+id/next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="next" />
+
+            <Button
+                android:id="@+id/newframe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="add frame" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/animationPanel2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/animationClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="clear" />
+
+            <Button
+                android:id="@+id/play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="play" />
+
+            <EditText
+                android:id="@+id/speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="400" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="milisec" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/drawPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/drawClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="clear" />
+
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

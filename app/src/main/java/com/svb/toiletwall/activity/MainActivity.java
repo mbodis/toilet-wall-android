@@ -60,22 +60,24 @@ public class MainActivity extends AppCompatActivity
     public static final String PROGRAM_TEST = "test";
     public static final String PROGRAM_RANDOM = "random";
     public static final String PROGRAM_DRAW = "draw";
+    public static final String PROGRAM_DRAW_ANIMATION = "animation";
 
     // GUI Components
-    private View connectingLl, bottomPanel;
-    ToiletView drawView;
-    private TextView mBluetoothStatus;
-    private TextView mReadBuffer;
-    private Button mScanBtn;
-    private Button mOffBtn;
-    private Button mListPairedDevicesBtn;
-    private Button mDiscoverBtn;
+    private View connectingLl;
+    private ToiletView drawView;
+    private Button mListPairedDevicesBtn, mDiscoverBtn, startProgramBtn;
     private BluetoothAdapter mBTAdapter;
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
     private ListView mDevicesListView;
     private Spinner programSpinner;
-    private Button startProgramBtn;
+
+    // GUI animation
+    private View animationPanel1, animationPanel2;
+
+    // GUI draw
+    private View drawPanel;
+
 
     private final String TAG = MainActivity.class.getSimpleName();
     private Handler mHandler; // Our main handler that will receive callback notifications
@@ -165,10 +167,14 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected.
-                mBluetoothStatus.setText("Enabled");
+                setTitleStatus("Enabled");
             } else
-                mBluetoothStatus.setText("Disabled");
+                setTitleStatus("Disabled");
         }
+    }
+
+    private void setTitleStatus(String msg){
+        getSupportActionBar().setTitle(msg);
     }
 
     @Override
@@ -190,19 +196,17 @@ public class MainActivity extends AppCompatActivity
                     drawView.startDrawImage();
                     connectionView(false);
                     drawView.setVisibility(View.VISIBLE);
-                    bottomPanel.setVisibility(View.VISIBLE);
-                }
-                break;
+                    drawPanel.setVisibility(View.VISIBLE);
 
-            case R.id.scan:
-                if (MySupport.setBluetoothOn(MainActivity.this)) {
-                    mBluetoothStatus.setText("Bluetooth enabled");
-                }
-                break;
-
-            case R.id.off:
-                if (MySupport.setBluetoothOff(MainActivity.this)) {
-                    mBluetoothStatus.setText("Bluetooth disabled");
+                } else if (selectedProgram.equals(PROGRAM_DRAW_ANIMATION)) {
+                    program = new DrawProgram(BLOCK_COLS, BLOCK_ROWS, mConnectedThread);
+                    drawView.setToiletDisplay(program.getToiletDisplay());
+                    drawView.startDrawImage();
+                    drawView.setVisibility(View.VISIBLE);
+                    connectionView(false);
+                    drawPanel.setVisibility(View.VISIBLE);
+                    animationPanel1.setVisibility(View.VISIBLE);
+                    animationPanel1.setVisibility(View.VISIBLE);
                 }
                 break;
 
@@ -214,8 +218,16 @@ public class MainActivity extends AppCompatActivity
                 discover(view);
                 break;
 
-            case R.id.clear:
+            case R.id.drawClear:
                 drawView.getToiletDisplay().clearScreen();
+                break;
+
+            case R.id.play:
+            case R.id.prev:
+            case R.id.next:
+            case R.id.animationClear:
+            case R.id.newframe:
+                Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -241,14 +253,13 @@ public class MainActivity extends AppCompatActivity
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-                    mReadBuffer.setText(readMessage);
                 }
 
                 if (msg.what == CONNECTING_STATUS) {
                     if (msg.arg1 == 1)
-                        mBluetoothStatus.setText("Connected to Device: " + (String) (msg.obj));
+                        setTitleStatus("Connected to Device: " + (String) (msg.obj));
                     else
-                        mBluetoothStatus.setText("Connection Failed");
+                        setTitleStatus("Connection Failed");
                 }
             }
         };
@@ -256,7 +267,7 @@ public class MainActivity extends AppCompatActivity
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
         if (mBTArrayAdapter == null) {
             // Device does not support Bluetooth
-            mBluetoothStatus.setText("Status: Bluetooth not found");
+            setTitleStatus("Status: Bluetooth not found");
             Toast.makeText(getApplicationContext(), "Bluetooth device not found!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -274,30 +285,36 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // connecting
         connectingLl = findViewById(R.id.connecting_ll);
-        bottomPanel = findViewById(R.id.bottomPanel);
-        bottomPanel.setVisibility(View.GONE);
-        findViewById(R.id.clear).setOnClickListener(this);
-
-        mBluetoothStatus = (TextView) findViewById(R.id.bluetoothStatus);
-        mReadBuffer = (TextView) findViewById(R.id.readBuffer);
-
-        mScanBtn = (Button) findViewById(R.id.scan);
-        mScanBtn.setOnClickListener(this);
-        mOffBtn = (Button) findViewById(R.id.off);
-        mOffBtn.setOnClickListener(this);
         mDiscoverBtn = (Button) findViewById(R.id.discover);
         mDiscoverBtn.setOnClickListener(this);
         mListPairedDevicesBtn = (Button) findViewById(R.id.PairedBtn);
         mListPairedDevicesBtn.setOnClickListener(this);
         startProgramBtn = (Button) findViewById(R.id.startProgram);
         startProgramBtn.setOnClickListener(this);
-
         mBTArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-
         mDevicesListView = (ListView) findViewById(R.id.devicesListView);
         mDevicesListView.setAdapter(mBTArrayAdapter); // assign model to view
         mDevicesListView.setOnItemClickListener(mDeviceClickListener);
+
+        // animation
+        animationPanel1 = findViewById(R.id.animationPanel1);
+        animationPanel1.setVisibility(View.GONE);
+        animationPanel2 = findViewById(R.id.animationPanel2);
+        animationPanel2.setVisibility(View.GONE);
+        findViewById(R.id.play).setOnClickListener(this);
+        findViewById(R.id.prev).setOnClickListener(this);
+        findViewById(R.id.next).setOnClickListener(this);
+        findViewById(R.id.newframe).setOnClickListener(this);
+        findViewById(R.id.animationClear).setOnClickListener(this);
+
+
+
+        // draw
+        drawPanel = findViewById(R.id.drawPanel);
+        drawPanel.setVisibility(View.GONE);
+        findViewById(R.id.drawClear).setOnClickListener(this);
 
         setupViewAdapter();
         setupDrawView();
@@ -307,6 +324,7 @@ public class MainActivity extends AppCompatActivity
         programSpinner = (Spinner) findViewById(R.id.select_program);
 
         List<String> list = new ArrayList<String>();
+        list.add(PROGRAM_DRAW_ANIMATION);
         list.add(PROGRAM_DRAW);
         list.add(PROGRAM_RANDOM);
         list.add(PROGRAM_TEST);
@@ -357,7 +375,7 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
 
-            mBluetoothStatus.setText("Connecting...");
+            setTitleStatus("Connecting...");
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
             final String address = info.substring(info.length() - 17);

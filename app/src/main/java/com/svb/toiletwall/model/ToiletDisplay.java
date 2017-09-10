@@ -1,5 +1,7 @@
 package com.svb.toiletwall.model;
 
+import android.util.Log;
+
 import com.svb.toiletwall.bluetooth.ConnectedThread;
 
 /**
@@ -7,6 +9,9 @@ import com.svb.toiletwall.bluetooth.ConnectedThread;
  */
 
 public class ToiletDisplay {
+
+    public static final String TAG = ToiletDisplay.class.getName();
+
     public static final byte BLOCK_LED_COLS = 4;
     public static final byte BLOCK_LED_ROWS = 3;
 
@@ -14,11 +19,10 @@ public class ToiletDisplay {
     byte DELIMETER_2 = (byte) 255;
     byte DELIMETER_3 = (byte) 255;
 
-
     private boolean[][] display;
     private byte ledRows, ledColumns;
     private int blockRows, blockColumns;
-//    private boolean sendOnce = false;
+    //private boolean sendOnce = false;
 
     public ToiletDisplay(int blockColumns, int blockRows) {
         this.blockColumns = blockColumns;
@@ -76,6 +80,10 @@ public class ToiletDisplay {
         display[col][row] = value;
     }
 
+    public void toggleScreenPx(int col, int row) {
+        display[col][row] = !display[col][row];
+    }
+
     public int getDisplayValue(int col, int row) {
         return (display[col][row] == true) ? 1 : 0;
     }
@@ -83,7 +91,7 @@ public class ToiletDisplay {
     synchronized public void sendScreenViaBt(ConnectedThread mConnectedThread) {
         if (mConnectedThread == null) return;
 
-//        if (sendOnce) return;
+        //if (sendOnce) return;
 
 
         mConnectedThread.writeByte(DELIMETER_1);
@@ -106,6 +114,7 @@ public class ToiletDisplay {
                  * bit 3,2,1,0  == row
                  */
                 int firstByte = Integer.parseInt(getBinaryValue(c+1, 4) + getBinaryValue(r+1, 4), 2);
+                //Log.d(TAG, "first byte: " + (byte) firstByte);
                 mConnectedThread.writeByte((byte) firstByte);
 
                 /*
@@ -117,6 +126,7 @@ public class ToiletDisplay {
                         + 4 * getDisplayValue(cc+1, rr)
                         + 2 * getDisplayValue(cc+2, rr)
                         + 1 * getDisplayValue(cc+3, rr);
+                //Log.d(TAG, "second byte: " + (byte) secondByte1);
                 mConnectedThread.writeByte((byte) secondByte1);
 
                 /*
@@ -128,16 +138,18 @@ public class ToiletDisplay {
                         + 64 * getDisplayValue(cc+1, rr+1)
                         + 32 * getDisplayValue(cc+2, rr+1)
                         + 16 * getDisplayValue(cc+3, rr+1);
-                int thirdByte2 = 8 * getDisplayValue(c, rr+2)
+                int thirdByte2 = 8 * getDisplayValue(cc, rr+2)
                         + 4 * getDisplayValue(cc+1, rr+2)
                         + 2 * getDisplayValue(cc+2, rr+2)
                         + 1 * getDisplayValue(cc+3, rr+2);
+                //Log.d(TAG, "third byte1: " + (byte) (thirdByte1));
+                //Log.d(TAG, "third byte2: " + (byte) (thirdByte2));
                 mConnectedThread.writeByte((byte) (thirdByte1 + thirdByte2));
 
             }
         }
 
-//        sendOnce = true;
+        //sendOnce = true;
     }
 
     public static String getBinaryValue(int integerValue, int binLength) {

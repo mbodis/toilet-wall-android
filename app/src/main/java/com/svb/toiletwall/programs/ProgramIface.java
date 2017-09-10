@@ -100,4 +100,8 @@ public abstract class ProgramIface {
         stopRender();
         stopLogic();
     }
+
+    public ToiletDisplay getToiletDisplay(){
+        return this.mToiletDisplay;
+    }
 }

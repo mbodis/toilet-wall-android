@@ -3,6 +3,7 @@ package com.svb.toiletwall.bluetooth;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.svb.toiletwall.activity.MainActivity;
 
@@ -15,6 +16,9 @@ import java.io.OutputStream;
  */
 
 public class ConnectedThread extends Thread {
+
+    public static final String TAG = ConnectedThread.class.getName();
+
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
@@ -65,6 +69,7 @@ public class ConnectedThread extends Thread {
     public void writeByte(Byte mByte) {
         try {
             mmOutStream.write(mByte);
+            //Log.d(TAG, "write byte: " + Integer.toBinaryString(mByte));
         } catch (IOException e) {
         }
     }

@@ -21,24 +21,31 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.model.ToiletDisplay;
+import com.svb.toiletwall.programs.DrawProgram;
 import com.svb.toiletwall.programs.ProgramIface;
+import com.svb.toiletwall.programs.RandomProgram;
 import com.svb.toiletwall.programs.TestingProgram;
 import com.svb.toiletwall.support.MySupport;
+import com.svb.toiletwall.view.ToiletView;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -47,8 +54,16 @@ import static com.svb.toiletwall.support.MySupport.REQUEST_ENABLE_BT;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
+    public static final int BLOCK_COLS = 3; // TODO move to settings
+    public static final int BLOCK_ROWS = 2; // TODO move to settings
+
+    public static final String PROGRAM_TEST = "test";
+    public static final String PROGRAM_RANDOM = "random";
+    public static final String PROGRAM_DRAW = "draw";
 
     // GUI Components
+    private View connectingLl, bottomPanel;
+    ToiletView drawView;
     private TextView mBluetoothStatus;
     private TextView mReadBuffer;
     private Button mScanBtn;
@@ -110,10 +125,7 @@ public class MainActivity extends AppCompatActivity
         if (mConnectedThread != null) {
             mConnectedThread.cancel();
         }
-        if (program != null) {
-            program.onDestroy();
-            program = null;
-        }
+        stopProgram();
         super.onDestroy();
     }
 
@@ -127,45 +139,15 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
+        if (id == R.id.nav_main) {
 
         } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 
@@ -193,12 +175,23 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.startProgram:
-                if (program != null) {
-                    program.onDestroy();
-                    program = null;
+                stopProgram();
+                String selectedProgram = (String) programSpinner.getAdapter().getItem(programSpinner.getSelectedItemPosition());
+
+                if (selectedProgram.equals(PROGRAM_TEST)) {
+                    program = new TestingProgram(BLOCK_COLS, BLOCK_ROWS, mConnectedThread);
+
+                } else if (selectedProgram.equals(PROGRAM_RANDOM)) {
+                    program = new RandomProgram(BLOCK_COLS, BLOCK_ROWS, mConnectedThread);
+
+                } else if (selectedProgram.equals(PROGRAM_DRAW)) {
+                    program = new DrawProgram(BLOCK_COLS, BLOCK_ROWS, mConnectedThread);
+                    drawView.setToiletDisplay(program.getToiletDisplay());
+                    drawView.startDrawImage();
+                    connectionView(false);
+                    drawView.setVisibility(View.VISIBLE);
+                    bottomPanel.setVisibility(View.VISIBLE);
                 }
-                //TODO create program by selecting from spinner
-                program = new TestingProgram(2, 2, mConnectedThread);
                 break;
 
             case R.id.scan:
@@ -220,6 +213,21 @@ public class MainActivity extends AppCompatActivity
             case R.id.discover:
                 discover(view);
                 break;
+
+            case R.id.clear:
+                drawView.getToiletDisplay().clearScreen();
+                break;
+        }
+    }
+
+    private void connectionView(boolean visible) {
+        connectingLl.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private void stopProgram() {
+        if (program != null) {
+            program.onDestroy();
+            program = null;
         }
     }
 
@@ -257,15 +265,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -275,9 +274,14 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        connectingLl = findViewById(R.id.connecting_ll);
+        bottomPanel = findViewById(R.id.bottomPanel);
+        bottomPanel.setVisibility(View.GONE);
+        findViewById(R.id.clear).setOnClickListener(this);
+
         mBluetoothStatus = (TextView) findViewById(R.id.bluetoothStatus);
         mReadBuffer = (TextView) findViewById(R.id.readBuffer);
-        programSpinner = (Spinner) findViewById(R.id.select_program);
+
         mScanBtn = (Button) findViewById(R.id.scan);
         mScanBtn.setOnClickListener(this);
         mOffBtn = (Button) findViewById(R.id.off);
@@ -295,6 +299,25 @@ public class MainActivity extends AppCompatActivity
         mDevicesListView.setAdapter(mBTArrayAdapter); // assign model to view
         mDevicesListView.setOnItemClickListener(mDeviceClickListener);
 
+        setupViewAdapter();
+        setupDrawView();
+    }
+
+    private void setupViewAdapter() {
+        programSpinner = (Spinner) findViewById(R.id.select_program);
+
+        List<String> list = new ArrayList<String>();
+        list.add(PROGRAM_DRAW);
+        list.add(PROGRAM_RANDOM);
+        list.add(PROGRAM_TEST);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        programSpinner.setAdapter(spinnerArrayAdapter);
+    }
+
+    private void setupDrawView(){
+        drawView = (ToiletView) findViewById(R.id.drawView);
     }
 
     private void discover(View view) {

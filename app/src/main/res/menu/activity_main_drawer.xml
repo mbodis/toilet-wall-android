@@ -3,13 +3,23 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_main"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="MainApp" />
+            android:id="@+id/nav_connection"
+            android:title="@string/nav_connection" />
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Settings" />
+            android:id="@+id/nav_test"
+            android:title="@string/nav_test" />
+        <item
+            android:id="@+id/nav_random"
+            android:title="@string/nav_random" />
+        <item
+            android:id="@+id/nav_draw"
+            android:title="@string/nav_draw" />
+        <item
+            android:id="@+id/nav_animation"
+            android:title="@string/nav_animation" />
+        <item
+            android:id="@+id/nav_settings"
+            android:title="@string/nav_settings" />
     </group>
 
 </menu>

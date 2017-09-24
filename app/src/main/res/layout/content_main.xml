@@ -38,28 +38,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <Spinner
-                android:id="@+id/select_program"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:entries="@array/programs" />
-
-            <Button
-                android:id="@+id/startProgram"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="start program" />
-
-        </LinearLayout>
-
         <ListView
             android:id="@+id/devicesListView"
             android:layout_width="wrap_content"
@@ -71,99 +49,10 @@
 
     </LinearLayout>
 
-    <com.svb.toiletwall.view.ToiletView
-        android:id="@+id/drawView"
+    <FrameLayout
+        android:layout_marginTop="45dp"
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/bottomPanel"
-        android:visibility="gone"></com.svb.toiletwall.view.ToiletView>
+        android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:id="@id/bottomPanel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/animationPanel1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/prev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="prev" />
-
-            <TextView
-                android:id="@+id/animationPage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="1/4" />
-
-            <Button
-                android:id="@+id/next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="next" />
-
-            <Button
-                android:id="@+id/newframe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="add frame" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/animationPanel2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/animationClear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="clear" />
-
-            <Button
-                android:id="@+id/play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="play" />
-
-            <EditText
-                android:id="@+id/speed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:text="400" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="milisec" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/drawPanel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/drawClear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="clear" />
-
-        </LinearLayout>
-    </LinearLayout>
 </RelativeLayout>

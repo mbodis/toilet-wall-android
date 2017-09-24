@@ -1,0 +1,19 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/preferences_category_title_dimensions" >
+
+        <EditTextPreference
+            android:defaultValue="2"
+            android:key="display_block_rows"
+            android:summary="@string/dimensions_rows_summary"
+            android:title="@string/dimensions_rows_title" />
+
+        <EditTextPreference
+            android:defaultValue="3"
+            android:key="display_block_cols"
+            android:summary="@string/dimensions_cols_summary"
+            android:title="@string/dimensions_cols_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

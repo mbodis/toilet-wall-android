@@ -1,5 +1,7 @@
 package com.svb.toiletwall.activity;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -9,9 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,31 +21,26 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.svb.toiletwall.R;
-import com.svb.toiletwall.model.ToiletDisplay;
-import com.svb.toiletwall.programs.DrawProgram;
-import com.svb.toiletwall.programs.ProgramIface;
-import com.svb.toiletwall.programs.RandomProgram;
-import com.svb.toiletwall.programs.TestingProgram;
-import com.svb.toiletwall.support.MySupport;
-import com.svb.toiletwall.view.ToiletView;
+import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.fragment.ProgramAnimationFragment;
+import com.svb.toiletwall.fragment.ProgramDrawFragment;
+import com.svb.toiletwall.fragment.ProgramRandomFragment;
+import com.svb.toiletwall.fragment.ProgramTestFragment;
+import com.svb.toiletwall.fragment.SettingsFragment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,42 +49,30 @@ import static com.svb.toiletwall.support.MySupport.REQUEST_ENABLE_BT;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
-    public static final int BLOCK_COLS = 3; // TODO move to settings
-    public static final int BLOCK_ROWS = 2; // TODO move to settings
+    private final String TAG = MainActivity.class.getName();
 
-    public static final String PROGRAM_TEST = "test";
-    public static final String PROGRAM_RANDOM = "random";
-    public static final String PROGRAM_DRAW = "draw";
-    public static final String PROGRAM_DRAW_ANIMATION = "animation";
+    public static final int PAGE_CONNECTION = 0;
+    public static final int PAGE_TEST = 1;
+    public static final int PAGE_RANDOM = 2;
+    public static final int PAGE_DRAW = 3;
+    public static final int PAGE_ANIMATION = 4;
+    public static final int PAGE_SETTINGS = 5;
 
     // GUI Components
-    private View connectingLl;
-    private ToiletView drawView;
-    private Button mListPairedDevicesBtn, mDiscoverBtn, startProgramBtn;
+    private View connectingLl, fragmentContainer;
+    private Button mListPairedDevicesBtn, mDiscoverBtn;
     private BluetoothAdapter mBTAdapter;
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
     private ListView mDevicesListView;
-    private Spinner programSpinner;
 
-    // GUI animation
-    private View animationPanel1, animationPanel2;
-
-    // GUI draw
-    private View drawPanel;
-
-
-    private final String TAG = MainActivity.class.getSimpleName();
+    // bluetooth
     private Handler mHandler; // Our main handler that will receive callback notifications
     private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
     private BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
 
+    // bluetooth static
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
-
-    ProgramIface program;
-
-    // #defines for identifying shared types between calling functions
-
     public static final int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     public static final int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
 
@@ -112,7 +95,9 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
         setupView();
+        setupViewDrawer();
         setupContent();
+        setTitleStatus("Device not connected");
     }
 
     @Override
@@ -127,8 +112,11 @@ public class MainActivity extends AppCompatActivity
         if (mConnectedThread != null) {
             mConnectedThread.cancel();
         }
-        stopProgram();
         super.onDestroy();
+    }
+
+    public ConnectedThread getConnectedThread() {
+        return mConnectedThread;
     }
 
     @Override
@@ -144,13 +132,25 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_main) {
+        if (id == R.id.nav_connection) {
+            setFragmentAsMain(PAGE_CONNECTION, null);
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_test) {
+            setFragmentAsMain(PAGE_TEST, null);
 
+        } else if (id == R.id.nav_random) {
+            setFragmentAsMain(PAGE_RANDOM, null);
+
+        } else if (id == R.id.nav_draw) {
+            setFragmentAsMain(PAGE_DRAW, null);
+
+        } else if (id == R.id.nav_animation) {
+            setFragmentAsMain(PAGE_ANIMATION, null);
+
+        } else if (id == R.id.nav_settings) {
+            setFragmentAsMain(PAGE_SETTINGS, null);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -167,48 +167,19 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected.
-                setTitleStatus("Enabled");
+                setTitleStatus("Bluetooth Enabled");
             } else
-                setTitleStatus("Disabled");
+                setTitleStatus("Bluetooth Disabled");
         }
     }
 
-    private void setTitleStatus(String msg){
+    private void setTitleStatus(String msg) {
         getSupportActionBar().setTitle(msg);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.startProgram:
-                stopProgram();
-                String selectedProgram = (String) programSpinner.getAdapter().getItem(programSpinner.getSelectedItemPosition());
-
-                if (selectedProgram.equals(PROGRAM_TEST)) {
-                    program = new TestingProgram(BLOCK_COLS, BLOCK_ROWS, mConnectedThread);
-
-                } else if (selectedProgram.equals(PROGRAM_RANDOM)) {
-                    program = new RandomProgram(BLOCK_COLS, BLOCK_ROWS, mConnectedThread);
-
-                } else if (selectedProgram.equals(PROGRAM_DRAW)) {
-                    program = new DrawProgram(BLOCK_COLS, BLOCK_ROWS, mConnectedThread);
-                    drawView.setToiletDisplay(program.getToiletDisplay());
-                    drawView.startDrawImage();
-                    connectionView(false);
-                    drawView.setVisibility(View.VISIBLE);
-                    drawPanel.setVisibility(View.VISIBLE);
-
-                } else if (selectedProgram.equals(PROGRAM_DRAW_ANIMATION)) {
-                    program = new DrawProgram(BLOCK_COLS, BLOCK_ROWS, mConnectedThread);
-                    drawView.setToiletDisplay(program.getToiletDisplay());
-                    drawView.startDrawImage();
-                    drawView.setVisibility(View.VISIBLE);
-                    connectionView(false);
-                    drawPanel.setVisibility(View.VISIBLE);
-                    animationPanel1.setVisibility(View.VISIBLE);
-                    animationPanel1.setVisibility(View.VISIBLE);
-                }
-                break;
 
             case R.id.PairedBtn:
                 listPairedDevices(view);
@@ -217,33 +188,17 @@ public class MainActivity extends AppCompatActivity
             case R.id.discover:
                 discover(view);
                 break;
-
-            case R.id.drawClear:
-                drawView.getToiletDisplay().clearScreen();
-                break;
-
-            case R.id.play:
-            case R.id.prev:
-            case R.id.next:
-            case R.id.animationClear:
-            case R.id.newframe:
-                Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
-                break;
         }
     }
 
-    private void connectionView(boolean visible) {
-        connectingLl.setVisibility(visible ? View.VISIBLE : View.GONE);
+    private void toggleViews(boolean connectionViewVisible, boolean fragmentContainerVisible) {
+        connectingLl.setVisibility(connectionViewVisible ? View.VISIBLE : View.GONE);
+        fragmentContainer.setVisibility(fragmentContainerVisible ? View.VISIBLE : View.GONE);
     }
 
-    private void stopProgram() {
-        if (program != null) {
-            program.onDestroy();
-            program = null;
-        }
-    }
 
     private void setupContent() {
+        // bt message handler
         mHandler = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 if (msg.what == MESSAGE_READ) {
@@ -264,12 +219,16 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        // setup bt adapter
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
         if (mBTArrayAdapter == null) {
             // Device does not support Bluetooth
             setTitleStatus("Status: Bluetooth not found");
             Toast.makeText(getApplicationContext(), "Bluetooth device not found!", Toast.LENGTH_SHORT).show();
         }
+
+        // set init page
+        setFragmentAsMain(PAGE_CONNECTION, null);
     }
 
     private void setupView() {
@@ -291,51 +250,93 @@ public class MainActivity extends AppCompatActivity
         mDiscoverBtn.setOnClickListener(this);
         mListPairedDevicesBtn = (Button) findViewById(R.id.PairedBtn);
         mListPairedDevicesBtn.setOnClickListener(this);
-        startProgramBtn = (Button) findViewById(R.id.startProgram);
-        startProgramBtn.setOnClickListener(this);
         mBTArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         mDevicesListView = (ListView) findViewById(R.id.devicesListView);
         mDevicesListView.setAdapter(mBTArrayAdapter); // assign model to view
         mDevicesListView.setOnItemClickListener(mDeviceClickListener);
 
-        // animation
-        animationPanel1 = findViewById(R.id.animationPanel1);
-        animationPanel1.setVisibility(View.GONE);
-        animationPanel2 = findViewById(R.id.animationPanel2);
-        animationPanel2.setVisibility(View.GONE);
-        findViewById(R.id.play).setOnClickListener(this);
-        findViewById(R.id.prev).setOnClickListener(this);
-        findViewById(R.id.next).setOnClickListener(this);
-        findViewById(R.id.newframe).setOnClickListener(this);
-        findViewById(R.id.animationClear).setOnClickListener(this);
+        fragmentContainer = findViewById(R.id.container);
 
-
-
-        // draw
-        drawPanel = findViewById(R.id.drawPanel);
-        drawPanel.setVisibility(View.GONE);
-        findViewById(R.id.drawClear).setOnClickListener(this);
-
-        setupViewAdapter();
-        setupDrawView();
     }
 
-    private void setupViewAdapter() {
-        programSpinner = (Spinner) findViewById(R.id.select_program);
+    private void setupViewDrawer(){
 
-        List<String> list = new ArrayList<String>();
-        list.add(PROGRAM_DRAW_ANIMATION);
-        list.add(PROGRAM_DRAW);
-        list.add(PROGRAM_RANDOM);
-        list.add(PROGRAM_TEST);
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-        programSpinner.setAdapter(spinnerArrayAdapter);
+        int menuIconSize = 22;
+
+        Menu mMenu = navigationView.getMenu();
+
+        MenuItem mainMenu = mMenu.findItem(R.id.nav_connection);
+        mainMenu.setIcon(new IconicsDrawable(this)
+                .icon(FontAwesome.Icon.faw_bluetooth)
+                .sizeDp(menuIconSize));
+        mainMenu = mMenu.findItem(R.id.nav_test);
+        mainMenu.setIcon(new IconicsDrawable(this)
+                .icon(FontAwesome.Icon.faw_code)
+                .sizeDp(menuIconSize));
+        mainMenu = mMenu.findItem(R.id.nav_random);
+        mainMenu.setIcon(new IconicsDrawable(this)
+                .icon(FontAwesome.Icon.faw_code)
+                .sizeDp(menuIconSize));
+        mainMenu = mMenu.findItem(R.id.nav_draw);
+        mainMenu.setIcon(new IconicsDrawable(this)
+                .icon(FontAwesome.Icon.faw_code)
+                .sizeDp(menuIconSize));
+        mainMenu = mMenu.findItem(R.id.nav_animation);
+        mainMenu.setIcon(new IconicsDrawable(this)
+                .icon(FontAwesome.Icon.faw_code)
+                .sizeDp(menuIconSize));
+        mainMenu = mMenu.findItem(R.id.nav_settings);
+        mainMenu.setIcon(new IconicsDrawable(this)
+                .icon(FontAwesome.Icon.faw_cogs)
+                .sizeDp(menuIconSize));
     }
 
-    private void setupDrawView(){
-        drawView = (ToiletView) findViewById(R.id.drawView);
+    public void setFragmentAsMain(int position, Bundle args) {
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction frTransaction = fragmentManager.beginTransaction();
+
+        switch (position) {
+            case PAGE_CONNECTION:
+                toggleViews(true, false);
+                break;
+
+            case PAGE_TEST:
+                toggleViews(false, true);
+                frTransaction.replace(R.id.container,
+                            ProgramTestFragment.newInstance(args), ProgramTestFragment.TAG);
+
+                break;
+
+            case PAGE_RANDOM:
+                toggleViews(false, true);
+                frTransaction.replace(R.id.container,
+                        ProgramRandomFragment.newInstance(args), ProgramRandomFragment.TAG);
+                break;
+
+            case PAGE_DRAW:
+                toggleViews(false, true);
+                frTransaction.replace(R.id.container,
+                        ProgramDrawFragment.newInstance(args), ProgramDrawFragment.TAG);
+                break;
+
+            case PAGE_ANIMATION:
+                toggleViews(false, true);
+                frTransaction.replace(R.id.container,
+                        ProgramAnimationFragment.newInstance(args), ProgramAnimationFragment.TAG);
+                break;
+
+            case PAGE_SETTINGS:
+                toggleViews(false, true);
+                frTransaction.replace(R.id.container,
+                        SettingsFragment.newInstance(args), SettingsFragment.TAG);
+                break;
+        }
+
+        frTransaction.commit();
     }
 
     private void discover(View view) {
@@ -364,14 +365,14 @@ public class MainActivity extends AppCompatActivity
 
             Toast.makeText(getApplicationContext(), "Show Paired Devices", Toast.LENGTH_SHORT).show();
         } else
-            Toast.makeText(getApplicationContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Enable Bluetooth please", Toast.LENGTH_SHORT).show();
     }
 
     private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
 
             if (!mBTAdapter.isEnabled()) {
-                Toast.makeText(getBaseContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Enable Bluetooth please", Toast.LENGTH_SHORT).show();
                 return;
             }
 

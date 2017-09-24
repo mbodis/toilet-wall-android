@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_category_title_dimensions">Dimensions</string>
+    <string name="dimensions_rows_summary">Set number of block rows</string>
+    <string name="dimensions_rows_title">Block rows</string>
+    <string name="dimensions_cols_summary">Set number of block columns</string>
+    <string name="dimensions_cols_title">Block columns</string>
+</resources>

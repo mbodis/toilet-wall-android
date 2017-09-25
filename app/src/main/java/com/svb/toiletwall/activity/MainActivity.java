@@ -32,6 +32,7 @@ import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
 import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.fragment.ProgramDrawFragment;
 import com.svb.toiletwall.fragment.ProgramRandomFragment;
@@ -52,11 +53,12 @@ public class MainActivity extends AppCompatActivity
     private final String TAG = MainActivity.class.getName();
 
     public static final int PAGE_CONNECTION = 0;
-    public static final int PAGE_TEST = 1;
-    public static final int PAGE_RANDOM = 2;
-    public static final int PAGE_DRAW = 3;
-    public static final int PAGE_ANIMATION = 4;
-    public static final int PAGE_SETTINGS = 5;
+    public static final int PAGE_TEST = 10;
+    public static final int PAGE_RANDOM = 20;
+    public static final int PAGE_DRAW = 30;
+    public static final int PAGE_ANIMATION = 40;
+    public static final int PAGE_ANIMATION_DETAIL = 41;
+    public static final int PAGE_SETTINGS = 50;
 
     // GUI Components
     private View connectingLl, fragmentContainer;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
     private ListView mDevicesListView;
+    int lastPage = PAGE_CONNECTION;
 
     // bluetooth
     private Handler mHandler; // Our main handler that will receive callback notifications
@@ -124,6 +127,10 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+
+        } else if (lastPage == PAGE_ANIMATION_DETAIL) {
+            setFragmentAsMain(PAGE_ANIMATION, null);
+
         } else {
             super.onBackPressed();
         }
@@ -259,7 +266,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void setupViewDrawer(){
+    private void setupViewDrawer() {
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -273,6 +280,7 @@ public class MainActivity extends AppCompatActivity
                 .icon(FontAwesome.Icon.faw_bluetooth)
                 .sizeDp(menuIconSize));
         mainMenu = mMenu.findItem(R.id.nav_test);
+        mainMenu.setVisible(false);
         mainMenu.setIcon(new IconicsDrawable(this)
                 .icon(FontAwesome.Icon.faw_code)
                 .sizeDp(menuIconSize));
@@ -307,7 +315,7 @@ public class MainActivity extends AppCompatActivity
             case PAGE_TEST:
                 toggleViews(false, true);
                 frTransaction.replace(R.id.container,
-                            ProgramTestFragment.newInstance(args), ProgramTestFragment.TAG);
+                        ProgramTestFragment.newInstance(args), ProgramTestFragment.TAG);
 
                 break;
 
@@ -326,6 +334,12 @@ public class MainActivity extends AppCompatActivity
             case PAGE_ANIMATION:
                 toggleViews(false, true);
                 frTransaction.replace(R.id.container,
+                        ProgramAnimationDetailFragment.newInstance(args), ProgramAnimationDetailFragment.TAG);
+                break;
+
+            case PAGE_ANIMATION_DETAIL:
+                toggleViews(false, true);
+                frTransaction.replace(R.id.container,
                         ProgramAnimationFragment.newInstance(args), ProgramAnimationFragment.TAG);
                 break;
 
@@ -335,6 +349,7 @@ public class MainActivity extends AppCompatActivity
                         SettingsFragment.newInstance(args), SettingsFragment.TAG);
                 break;
         }
+        lastPage = position;
 
         frTransaction.commit();
     }

@@ -94,4 +94,6 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <include layout="@layout/partial_loading" />
 </RelativeLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_common_ok">ok</string>
+    <string name="dialog_common_cancel">cancel</string>
+    <string name="dialog_common_delete">delete</string>
+    <string name="dialog_common_save">save</string>
+
+    <string name="animation_dialog_set_name">Set animation name</string>
+</resources>

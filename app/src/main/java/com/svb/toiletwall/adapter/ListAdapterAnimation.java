@@ -9,12 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.activity.MainActivity;
 import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
 import com.svb.toiletwall.model.db.Animation;
+import com.svb.toiletwall.support.FontManager;
 
 import java.util.List;
 
@@ -36,13 +39,15 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        CardView cv;
+        public CardView cardView;
         public TextView animName;
+        public Button playAnimationBtn;
 
         ViewHolder(View itemView, Context act) {
             super(itemView);
-            cv = (CardView) itemView.findViewById(R.id.cv);
-            animName = ((TextView) cv.findViewById(R.id.animation_name));
+            cardView = (CardView) itemView.findViewById(R.id.animationCardView);
+            animName = ((TextView) cardView.findViewById(R.id.animationName));
+            playAnimationBtn = ((Button) cardView.findViewById(R.id.playAnimation));
         }
     }
 
@@ -64,9 +69,16 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
         final Animation mAnimation = list.get(position);
 
         holder.animName.setText(mAnimation.getName());
+        holder.playAnimationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO implement
+                Toast.makeText(act, "TODO PLAY", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
-        holder.cv.setOnClickListener(new View.OnClickListener() {
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle = ProgramAnimationDetailFragment.editAnimationBundle(mAnimation.getId());
@@ -74,7 +86,7 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
             }
         });
 
-        setAnimation(holder.cv, position);
+        setAnimation(holder.cardView, position);
     }
 
     @Override

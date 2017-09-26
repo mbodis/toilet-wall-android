@@ -8,9 +8,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:padding="5dp"
-        android:text="Program Aninmation"
-        android:textSize="15dp" />
+        android:padding="6dp"
+        android:text="Program Animation"
+        android:textSize="16dp"
+        android:textStyle="bold" />
 
     <com.svb.toiletwall.view.ToiletView
         android:id="@+id/drawView"
@@ -19,81 +20,112 @@
         android:layout_above="@+id/bottomPanel"
         android:layout_below="@id/title"></com.svb.toiletwall.view.ToiletView>
 
-    <LinearLayout
+    <HorizontalScrollView
         android:id="@id/bottomPanel"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        android:layout_alignParentBottom="true">
 
         <LinearLayout
-            android:id="@+id/animationPanel1"
-            android:layout_width="match_parent"
+
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/prev"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/animationPanel1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="prev" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/animationPage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="1/4" />
+                <Button
+                    android:id="@+id/backwardFast"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_fast_backward}" />
 
-            <Button
-                android:id="@+id/next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="next" />
+                <Button
+                    android:id="@+id/backwardStep"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_step_backward}" />
 
-            <Button
-                android:id="@+id/newframe"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/animationPage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="1/4" />
+
+                <Button
+                    android:id="@+id/forwardStep"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_step_forward}" />
+
+                <Button
+                    android:id="@+id/forwardFast"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_fast_forward}" />
+
+                <Button
+                    android:id="@+id/play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_play}" />
+
+                <Button
+                    android:id="@+id/stop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_stop}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/animationPanel2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="add frame" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/animationClear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_eraser}" />
+
+                <Button
+                    android:id="@+id/framePlus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_plus}" />
+
+                <Button
+                    android:id="@+id/frameMinus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_minus}" />
+
+                <EditText
+                    android:id="@+id/speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="400" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="milisec" />
+            </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/animationPanel2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/animationClear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="clear" />
-
-            <Button
-                android:id="@+id/play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="play" />
-
-            <EditText
-                android:id="@+id/speed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:text="400" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="milisec" />
-        </LinearLayout>
-
-    </LinearLayout>
+    </HorizontalScrollView>
 
     <include layout="@layout/partial_loading" />
 </RelativeLayout>

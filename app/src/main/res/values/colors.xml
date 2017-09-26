@@ -4,6 +4,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="actionBarIcons">#ffffff</color>
+
 
     <!-- layout common -->
     <color name="white_transparent">#88ffffff</color>

@@ -16,7 +16,7 @@ public class App extends Application {
         super.onCreate();
 
         // initial database
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "dbook-db");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "toilet-db");
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
 

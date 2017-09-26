@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.application.App;
+import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.DaoSession;
 
@@ -35,7 +36,7 @@ public class CreateNewAnimationFragmentDialog extends DialogFragment {
         final EditText animationNameEditText = (EditText) dialogView.findViewById(R.id.animationName);
 
         final AlertDialog alert = new AlertDialog.Builder(getActivity())
-                .setTitle(getString(R.string.animation_dialog_set_name))
+                .setTitle(getString(R.string.dialog_animation_set_name))
                 .setView(dialogView)
                 .setPositiveButton(R.string.dialog_common_cancel, null)
                 .setNegativeButton(R.string.dialog_common_save, new DialogInterface.OnClickListener() {
@@ -44,7 +45,7 @@ public class CreateNewAnimationFragmentDialog extends DialogFragment {
 
                         // verify name length
                         if (animationNameEditText.getText().toString().length() == 0){
-                            Toast.makeText(getActivity(), "Name not set", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.dialog_animation_invalid_name), Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -54,7 +55,10 @@ public class CreateNewAnimationFragmentDialog extends DialogFragment {
                         daoSession.getAnimationDao().insert(animation);
                         daoSession.clear();
 
-                        Toast.makeText(getActivity(), "Item created", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.dialog_result_msg_created), Toast.LENGTH_SHORT).show();
+
+                        ProgramAnimationFragment.reloadAnimationList(getActivity());
+
                     }
                 })
                 .create();

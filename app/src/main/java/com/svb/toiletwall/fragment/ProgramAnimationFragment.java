@@ -1,6 +1,11 @@
 package com.svb.toiletwall.fragment;
 
+import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +35,8 @@ import java.util.List;
 public class ProgramAnimationFragment extends ProgramListFragment implements View.OnClickListener{
 
     public static final String TAG = ProgramAnimationDetailFragment.class.getName();
+    public static final String ACTION_REFRESH_LIST = TAG + "_refresh_list";
+
 
     private View loadingView, emptyList;
     private RecyclerView mRecyclerView;
@@ -42,6 +49,21 @@ public class ProgramAnimationFragment extends ProgramListFragment implements Vie
         fragment.setArguments(args);
         return fragment;
     }
+
+    public static void reloadAnimationList(Activity act){
+        act.sendBroadcast(new Intent(ACTION_REFRESH_LIST));
+    }
+
+    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.getAction() != null) {
+                if (intent.getAction().equals(ACTION_REFRESH_LIST)){
+                    retrieveListItems();
+                }
+            }
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,12 +79,19 @@ public class ProgramAnimationFragment extends ProgramListFragment implements Vie
     public void onResume() {
         super.onResume();
         retrieveListItems();
+        getActivity().registerReceiver(mBroadcastReceiver, new IntentFilter(ACTION_REFRESH_LIST));
     }
 
     @Override
     void startProgram(int listIdx) {
         stopProgram();
         // TODO implement
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().unregisterReceiver(mBroadcastReceiver);
     }
 
     private void setupView(View mView) {

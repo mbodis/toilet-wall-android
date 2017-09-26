@@ -5,5 +5,14 @@
     <string name="dialog_common_delete">delete</string>
     <string name="dialog_common_save">save</string>
 
-    <string name="animation_dialog_set_name">Set animation name</string>
+    <string name="dialog_result_msg_created">Item was successfully created.</string>
+    <string name="dialog_result_msg_updated">Item was successfully updated.</string>
+    <string name="dialog_result_msg_deleted">Item was successfully deleted.</string>
+    <string name="dialog_result_msg_err">There was a problem with your request, please try again later.</string>
+
+    <string name="dialog_animation_set_name">Set animation name</string>
+    <string name="dialog_animation_invalid_name">Name is not set.</string>
+
+    <string name="dialog_delete_animation_title">Delete animation</string>
+    <string name="dialog_delete_animation_message">Are you sure you want to delete selected animation?</string>
 </resources>

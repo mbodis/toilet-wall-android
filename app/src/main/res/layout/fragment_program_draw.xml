@@ -36,7 +36,7 @@
                 android:id="@+id/drawClear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="clear" />
+                android:text="{faw_eraser}" />
 
         </LinearLayout>
     </LinearLayout>

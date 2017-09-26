@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.application.App;
+import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
+import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.AnimationDao;
 import com.svb.toiletwall.model.db.DaoSession;
@@ -49,7 +51,7 @@ public class EditAnimationNameFragmentDialog extends DialogFragment {
         animationNameEditText.setText(animation.getName());
 
         final AlertDialog alert = new AlertDialog.Builder(getActivity())
-                .setTitle(getString(R.string.animation_dialog_set_name))
+                .setTitle(getString(R.string.dialog_animation_set_name))
                 .setView(dialogView)
                 .setPositiveButton(R.string.dialog_common_cancel, null)
                 .setNegativeButton(R.string.dialog_common_save, new DialogInterface.OnClickListener() {
@@ -58,7 +60,7 @@ public class EditAnimationNameFragmentDialog extends DialogFragment {
 
                         // verify name length
                         if (animationNameEditText.getText().toString().length() == 0){
-                            Toast.makeText(getActivity(), "Name not set", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.dialog_animation_invalid_name), Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -69,7 +71,9 @@ public class EditAnimationNameFragmentDialog extends DialogFragment {
                         animation.update();
                         daoSession.clear();
 
-                        Toast.makeText(getActivity(), "Item changed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.dialog_result_msg_updated), Toast.LENGTH_SHORT).show();
+
+                        ProgramAnimationDetailFragment.updateAnimationNameView(getActivity(), animationNameEditText.getText().toString());
                     }
                 })
                 .create();

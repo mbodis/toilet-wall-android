@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,8 +14,13 @@ import android.widget.Toast;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.application.App;
 import com.svb.toiletwall.fragment.ProgramAnimationFragment;
+import com.svb.toiletwall.model.ToiletDisplay;
 import com.svb.toiletwall.model.db.Animation;
+import com.svb.toiletwall.model.db.AnimationFrame;
 import com.svb.toiletwall.model.db.DaoSession;
+import com.svb.toiletwall.support.MyShPrefs;
+
+import org.greenrobot.greendao.database.Database;
 
 
 public class CreateNewAnimationFragmentDialog extends DialogFragment {
@@ -50,9 +57,31 @@ public class CreateNewAnimationFragmentDialog extends DialogFragment {
                         }
 
                         DaoSession daoSession = ((App)getActivity().getApplication()).getDaoSession();
-                        Animation animation = new Animation();
-                        animation.setName(animationNameEditText.getText().toString());
-                        daoSession.getAnimationDao().insert(animation);
+                        Database db = daoSession.getDatabase();
+                        db.beginTransaction();
+
+                        try {
+                            Animation animation = new Animation();
+                            animation.setName(animationNameEditText.getText().toString());
+                            animation.setRows(MyShPrefs.getBlockRows(getActivity()));
+                            animation.setCols(MyShPrefs.getBlockCols(getActivity()));
+                            daoSession.getAnimationDao().insert(animation);
+
+
+                            AnimationFrame animationFrame = new AnimationFrame();
+                            animationFrame.setAnimationId(animation.getId());
+                            animationFrame.setOrder(0);
+                            animationFrame.setPlayMilis(400); // TODO sh prefs
+                            animationFrame.setContent(ToiletDisplay.getEmptyScreen(animation.getCols(), animation.getRows()));
+                            daoSession.getAnimationFrameDao().insert(animationFrame);
+
+                            db.setTransactionSuccessful();
+                        }catch (Exception ex){
+
+                            Log.d(TAG, "transaction: " + ex.getMessage());
+                        }finally {
+                            db.endTransaction();
+                        }
                         daoSession.clear();
 
                         Toast.makeText(getActivity(), getString(R.string.dialog_result_msg_created), Toast.LENGTH_SHORT).show();

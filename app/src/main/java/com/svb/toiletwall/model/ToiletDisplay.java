@@ -1,8 +1,10 @@
 package com.svb.toiletwall.model;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.model.db.AnimationFrame;
 
 /**
  * Created by mbodis on 8/18/17.
@@ -68,11 +70,11 @@ public class ToiletDisplay {
         }
     }
 
-    public int getLedColumns(){
+    public int getLedColumns() {
         return ledColumns;
     }
 
-    public int getLedRows(){
+    public int getLedRows() {
         return ledRows;
     }
 
@@ -105,15 +107,15 @@ public class ToiletDisplay {
         for (int c = 0; c < this.blockColumns; c++) {
             for (int r = 0; r < this.blockRows; r++) {
 
-                int cc = c*BLOCK_LED_COLS;
-                int rr = r*BLOCK_LED_ROWS;
+                int cc = c * BLOCK_LED_COLS;
+                int rr = r * BLOCK_LED_ROWS;
 
                 /*
                  * first byte for each block
                  * bit 7,6,5,4  == column
                  * bit 3,2,1,0  == row
                  */
-                int firstByte = Integer.parseInt(getBinaryValue(c+1, 4) + getBinaryValue(r+1, 4), 2);
+                int firstByte = Integer.parseInt(getBinaryValue(c + 1, 4) + getBinaryValue(r + 1, 4), 2);
                 //Log.d(TAG, "first byte: " + (byte) firstByte);
                 mConnectedThread.writeByte((byte) firstByte);
 
@@ -123,9 +125,9 @@ public class ToiletDisplay {
                  * bit 3,2,1,0  == first row of LED block
                  */
                 int secondByte1 = 8 * getDisplayValue(cc, rr)
-                        + 4 * getDisplayValue(cc+1, rr)
-                        + 2 * getDisplayValue(cc+2, rr)
-                        + 1 * getDisplayValue(cc+3, rr);
+                        + 4 * getDisplayValue(cc + 1, rr)
+                        + 2 * getDisplayValue(cc + 2, rr)
+                        + 1 * getDisplayValue(cc + 3, rr);
                 //Log.d(TAG, "second byte: " + (byte) secondByte1);
                 mConnectedThread.writeByte((byte) secondByte1);
 
@@ -134,14 +136,14 @@ public class ToiletDisplay {
                  * bit 7,6,5,4  == second row of LED block
                  * bit 3,2,1,0  == third row of LED block
                  */
-                int thirdByte1 = 128 * getDisplayValue(cc, rr+1)
-                        + 64 * getDisplayValue(cc+1, rr+1)
-                        + 32 * getDisplayValue(cc+2, rr+1)
-                        + 16 * getDisplayValue(cc+3, rr+1);
-                int thirdByte2 = 8 * getDisplayValue(cc, rr+2)
-                        + 4 * getDisplayValue(cc+1, rr+2)
-                        + 2 * getDisplayValue(cc+2, rr+2)
-                        + 1 * getDisplayValue(cc+3, rr+2);
+                int thirdByte1 = 128 * getDisplayValue(cc, rr + 1)
+                        + 64 * getDisplayValue(cc + 1, rr + 1)
+                        + 32 * getDisplayValue(cc + 2, rr + 1)
+                        + 16 * getDisplayValue(cc + 3, rr + 1);
+                int thirdByte2 = 8 * getDisplayValue(cc, rr + 2)
+                        + 4 * getDisplayValue(cc + 1, rr + 2)
+                        + 2 * getDisplayValue(cc + 2, rr + 2)
+                        + 1 * getDisplayValue(cc + 3, rr + 2);
                 //Log.d(TAG, "third byte1: " + (byte) (thirdByte1));
                 //Log.d(TAG, "third byte2: " + (byte) (thirdByte2));
                 mConnectedThread.writeByte((byte) (thirdByte1 + thirdByte2));
@@ -195,5 +197,37 @@ public class ToiletDisplay {
         mConnectedThread.writeByte((byte) 34); //00100010
         mConnectedThread.writeByte((byte) 1);  //00000001
         mConnectedThread.writeByte((byte) 31); //00011111
+    }
+
+    public void setScreenByFrame(AnimationFrame animationFrame) {
+        for (int row = 0; row < ledRows; row++) {
+            for (int col = 0; col < ledColumns; col++) {
+                int from = row * ledColumns + col;
+                int to = from + 1;
+                setScreenPx(col, row, Integer.parseInt(animationFrame.getContent().substring(from, to)) == 1);
+            }
+        }
+    }
+
+    public String getFrameFromScreen() {
+        StringBuffer res = new StringBuffer();
+        for (int row = 0; row < ledRows; row++) {
+            for (int col = 0; col < ledColumns; col++) {
+                res.append(String.valueOf(getDisplayValue(col, row)));
+            }
+        }
+
+        return res.toString();
+    }
+
+    public static String getEmptyScreen(int blockCols, int blockRows) {
+        StringBuffer res = new StringBuffer();
+        for (int row = 0; row < blockRows * BLOCK_LED_ROWS; row++) {
+            for (int col = 0; col < blockCols * BLOCK_LED_COLS; col++) {
+                res.append(String.valueOf(0));
+            }
+        }
+
+        return res.toString();
     }
 }

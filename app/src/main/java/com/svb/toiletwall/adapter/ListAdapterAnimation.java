@@ -16,8 +16,11 @@ import android.widget.Toast;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.activity.MainActivity;
 import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
+import com.svb.toiletwall.model.ToiletDisplay;
 import com.svb.toiletwall.model.db.Animation;
+import com.svb.toiletwall.programs.AnimationProgram;
 import com.svb.toiletwall.support.FontManager;
+import com.svb.toiletwall.support.MyShPrefs;
 
 import java.util.List;
 
@@ -40,13 +43,14 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;
-        public TextView animName;
+        public TextView animName, animSize;
         public Button playAnimationBtn;
 
         ViewHolder(View itemView, Context act) {
             super(itemView);
             cardView = (CardView) itemView.findViewById(R.id.animationCardView);
             animName = ((TextView) cardView.findViewById(R.id.animationName));
+            animSize = ((TextView) cardView.findViewById(R.id.animationSize));
             playAnimationBtn = ((Button) cardView.findViewById(R.id.playAnimation));
         }
     }
@@ -69,11 +73,14 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
         final Animation mAnimation = list.get(position);
 
         holder.animName.setText(mAnimation.getName());
+        holder.animSize.setText(mAnimation.getCols() * ToiletDisplay.BLOCK_LED_COLS + "x" + mAnimation.getRows() * ToiletDisplay.BLOCK_LED_ROWS + " pts");
         holder.playAnimationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO implement
-                Toast.makeText(act, "TODO PLAY", Toast.LENGTH_SHORT).show();
+                AnimationProgram program = new AnimationProgram(
+                        ((MainActivity)act).getConnectedThread(),
+                        mAnimation);
+                program.playAnimationOnce();
             }
         });
 

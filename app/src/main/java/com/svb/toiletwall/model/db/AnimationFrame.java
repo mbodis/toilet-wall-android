@@ -23,11 +23,6 @@ public class AnimationFrame {
     @NotNull
     private int order;
 
-    @NotNull
-    private int rows;
-    @NotNull
-    private int cols;
-
     /**
      * how long (ms) to play this frame
      */
@@ -49,14 +44,13 @@ public class AnimationFrame {
     @Generated(hash = 1756513872)
     private transient AnimationFrameDao myDao;
 
-    @Generated(hash = 1079425606)
-    public AnimationFrame(Long id, @NotNull Long animationId, int order, int rows, int cols,
+
+    @Generated(hash = 362009783)
+    public AnimationFrame(Long id, @NotNull Long animationId, int order,
             int playMilis, @NotNull String content) {
         this.id = id;
         this.animationId = animationId;
         this.order = order;
-        this.rows = rows;
-        this.cols = cols;
         this.playMilis = playMilis;
         this.content = content;
     }
@@ -64,6 +58,7 @@ public class AnimationFrame {
     @Generated(hash = 1261134759)
     public AnimationFrame() {
     }
+
     
     public Long getId() {
         return this.id;
@@ -81,21 +76,6 @@ public class AnimationFrame {
         this.order = order;
     }
 
-    public int getRows() {
-        return this.rows;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
-
-    public int getCols() {
-        return this.cols;
-    }
-
-    public void setCols(int cols) {
-        this.cols = cols;
-    }
 
     public String getContent() {
         return this.content;
@@ -111,6 +91,16 @@ public class AnimationFrame {
 
     public void setAnimationId(Long animationId) {
         this.animationId = animationId;
+    }
+
+
+
+    public int getPlayMilis() {
+        return this.playMilis;
+    }
+
+    public void setPlayMilis(int playMilis) {
+        this.playMilis = playMilis;
     }
 
     /**
@@ -149,20 +139,13 @@ public class AnimationFrame {
         myDao.update(this);
     }
 
-    public int getPlayMilis() {
-        return this.playMilis;
-    }
-
-    public void setPlayMilis(int playMilis) {
-        this.playMilis = playMilis;
-    }
-
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 436762390)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getAnimationFrameDao() : null;
     }
+
 
 
 }

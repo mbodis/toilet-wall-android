@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,13 +25,13 @@ import com.svb.toiletwall.R;
 import com.svb.toiletwall.application.App;
 import com.svb.toiletwall.dialog.DeleteAnimationFragmentDialog;
 import com.svb.toiletwall.dialog.EditAnimationNameFragmentDialog;
+import com.svb.toiletwall.model.ToiletDisplay;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.AnimationDao;
 import com.svb.toiletwall.model.db.AnimationFrame;
 import com.svb.toiletwall.model.db.AnimationFrameDao;
 import com.svb.toiletwall.model.db.DaoSession;
 import com.svb.toiletwall.programs.AnimationProgram;
-import com.svb.toiletwall.programs.DrawProgram;
 import com.svb.toiletwall.support.MyShPrefs;
 import com.svb.toiletwall.view.ToiletView;
 
@@ -47,14 +48,15 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
     public static final String ACTION_UPDATE_NAME = "action_update";
 
     private View loadingView;
+    private EditText frameSpeed;
     private ToiletView drawView;
     private TextView titleAnimation, animationPage;
 
     private AsyncRetrieveAnimation mAsyncRetrieveAnimation;
     private Animation animation;
     private long animationId = -1;
+    private int currentFrame = 0;
 
-    private int currentPage = 1;
     DaoSession daoSession;
 
     public static ProgramAnimationFragment newInstance(Bundle args) {
@@ -94,7 +96,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_program_animation_detail, container, false);
 
-        daoSession = ((App)getActivity().getApplication()).getDaoSession();
+        daoSession = ((App) getActivity().getApplication()).getDaoSession();
 
         setupView(rootView);
         showLoading(true);
@@ -137,11 +139,12 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         titleAnimation.setOnClickListener(this);
 
         animationPage = (TextView) mView.findViewById(R.id.animationPage);
+        frameSpeed = (EditText) mView.findViewById(R.id.speed);
 
         mView.findViewById(R.id.play).setOnClickListener(this);
         mView.findViewById(R.id.stop).setOnClickListener(this);
 
-        mView.findViewById(R.id.forwardFast).setOnClickListener(this);
+        mView.findViewById(R.id.forwardStep).setOnClickListener(this);
         mView.findViewById(R.id.forwardFast).setOnClickListener(this);
         mView.findViewById(R.id.backwardStep).setOnClickListener(this);
         mView.findViewById(R.id.backwardFast).setOnClickListener(this);
@@ -159,6 +162,11 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                 .colorRes(R.color.actionBarIcons)
                 .icon(FontAwesome.Icon.faw_trash).actionBar());
 
+        menuItem = menu.findItem(R.id.action_save_frame);
+        menuItem.setIcon(new IconicsDrawable(getActivity())
+                .colorRes(R.color.actionBarIcons)
+                .icon(FontAwesome.Icon.faw_floppy_o).actionBar());
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -170,6 +178,11 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
             case R.id.action_delete:
                 DialogFragment newFragment = DeleteAnimationFragmentDialog.newInstance(animation.getId());
                 newFragment.show(getFragmentManager(), DeleteAnimationFragmentDialog.TAG);
+                break;
+
+            case R.id.action_save_frame:
+                saveCurrentFrame();
+                Toast.makeText(getActivity(), "frame saved", Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -195,19 +208,19 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                 break;
 
             case R.id.forwardStep:
-                nextPage();
+                nextFrame();
                 break;
 
             case R.id.forwardFast:
-                lastPage();
+                lastFrame();
                 break;
 
             case R.id.backwardStep:
-                prevPage();
+                prevFrame();
                 break;
 
             case R.id.backwardFast:
-                firstPage();
+                firstFrame();
                 break;
 
             case R.id.animationClear:
@@ -227,7 +240,6 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
 
     @Override
     void startProgram() {
-        stop();
         program = new AnimationProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
@@ -264,88 +276,102 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
     }
 
     private void updatePagination() {
-        animationPage.setText(currentPage + "/" + animation.getFrames().size());
+        animationPage.setText((currentFrame+1) + "/" + animation.getFrames().size());
     }
 
-    private void nextPage() {
-        currentPage = (currentPage < animation.getFrames().size()) ? currentPage + 1 : currentPage;
-        updatePagination();
-        renderDrawView();
-        updateMilis();
+    private void nextFrame() {
+        if (currentFrame < (animation.getFrames().size()-1)) {
+            currentFrame = currentFrame + 1;
+            updatePagination();
+            renderDrawView();
+            updateMilis();
+        }
     }
 
-    private void prevPage() {
-        currentPage = (currentPage > 1) ? currentPage - 1 : currentPage;
-        updatePagination();
-        renderDrawView();
-        updateMilis();
+    private void prevFrame() {
+        if (currentFrame > 0) {
+            currentFrame = currentFrame - 1;
+            updatePagination();
+            renderDrawView();
+            updateMilis();
+        }
     }
 
-    private void firstPage() {
-        currentPage = 1;
-        updatePagination();
-        renderDrawView();
-        updateMilis();
+    private void firstFrame() {
+        if (currentFrame != 0) {
+            currentFrame = 0;
+            updatePagination();
+            renderDrawView();
+            updateMilis();
+        }
     }
 
-    private void lastPage() {
-        currentPage = animation.getFrames().size();
-        updatePagination();
-        renderDrawView();
-        updateMilis();
+    private void lastFrame() {
+        if (currentFrame != (animation.getFrames().size()-1)) {
+            currentFrame = animation.getFrames().size() - 1;
+            updatePagination();
+            renderDrawView();
+            updateMilis();
+        }
     }
 
-    private void addFrame(){
+    private void addFrame() {
         AnimationFrame animationFrame = new AnimationFrame();
         animationFrame.setAnimationId(animation.getId());
-        animationFrame.setCols(MyShPrefs.getBlockCols(getActivity()));
-        animationFrame.setRows(MyShPrefs.getBlockRows(getActivity()));
-        animationFrame.setOrder(animation.getFrames().size() + 1);
+        animationFrame.setOrder(animation.getFrames().size()); // first frame is 0
         animationFrame.setPlayMilis(400); // TODO sh prefs
+        animationFrame.setContent(ToiletDisplay.getEmptyScreen(animation.getCols(), animation.getRows()));
         daoSession.getAnimationFrameDao().insert(animationFrame);
         daoSession.clear();
 
         retrieveListItems();
+        Toast.makeText(getActivity(), "new frame added", Toast.LENGTH_SHORT).show();
     }
 
-    private void removeFrame(){
+    private void removeFrame() {
         if (animation.getFrames().size() > 1) {
+            if (currentFrame == (animation.getFrames().size()-1)){
+                currentFrame--;
+            }
 
-            AnimationFrame af = daoSession.getAnimationFrameDao().queryBuilder()
-                    .where(AnimationFrameDao.Properties.AnimationId.eq(animation.getId()))
-                    .where(AnimationFrameDao.Properties.Order.eq(currentPage))
-                    .build().forCurrentThread().listLazy().get(0);
-            af.delete();
+            animation.getFrames().get(currentFrame).delete();
             daoSession.clear();
 
+
             retrieveListItems();
-        }else{
-            Toast.makeText(getActivity(), "last frame cannot be removed", Toast.LENGTH_SHORT).show(); // TODO string
+        } else {
+            Toast.makeText(getActivity(), "last frame cannot be removed", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void saveCurrentFrame(){
-        //TODO - continue here
+    private void saveCurrentFrame() {
+        animation.getFrames().get(currentFrame).setContent(program.getToiletDisplay().getFrameFromScreen());
+        animation.getFrames().get(currentFrame).setPlayMilis(Integer.parseInt(frameSpeed.getText().toString()));
+        animation.getFrames().get(currentFrame).update();
     }
 
-    private void renderDrawView(){
-        //TODO - continue here
+    /**
+     * load frame from db, and show on drawView
+     */
+    private void renderDrawView() {
+        program.getToiletDisplay().setScreenByFrame(animation.getFrames().get(currentFrame));
     }
 
-    private void updateMilis(){
-        //TODO
+    private void updateMilis() {
+        frameSpeed.setText(animation.getFrames().get(currentFrame).getPlayMilis() + "");
     }
 
-    private void play(){
-        //TODO
+    private void play() {
+        ((AnimationProgram) program).setFrames(animation.getFrames());
+        ((AnimationProgram) program).playAnimationOnce();
     }
 
-    private void stop(){
-        //TODO
+    private void stop() {
+        ((AnimationProgram) program).stopAnimation();
     }
 
-    private void clearFrame(){
-        //TODO
+    private void clearFrame() {
+        program.getToiletDisplay().clearScreen();
     }
 
 

@@ -72,10 +72,13 @@ public abstract class ProgramIface {
             public void run() {
                 while (logicThreadAlive) {
                     logicExecute();
-                    try {
-                        sleep(logicSleepTime); // 25 frame per second == 40 ms wait
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+
+                    if (logicSleepTime > 0) {
+                        try {
+                            sleep(logicSleepTime); // 25 frame per second == 40 ms wait
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

@@ -26,6 +26,11 @@ public class Animation {
     @NotNull
     private String name;
 
+    @NotNull
+    private int rows;
+    @NotNull
+    private int cols;
+
     @ToMany(referencedJoinProperty = "animationId")
     @OrderBy("id ASC")
     private List<AnimationFrame> frames;
@@ -39,10 +44,12 @@ public class Animation {
     private transient AnimationDao myDao;
 
 
-    @Generated(hash = 973856021)
-    public Animation(Long id, @NotNull String name) {
+    @Generated(hash = 1766564619)
+    public Animation(Long id, @NotNull String name, int rows, int cols) {
         this.id = id;
         this.name = name;
+        this.rows = rows;
+        this.cols = cols;
     }
 
     @Generated(hash = 1977008734)
@@ -129,6 +136,22 @@ public class Animation {
             throw new DaoException("Entity is detached from DAO context");
         }
         myDao.update(this);
+    }
+
+    public int getRows() {
+        return this.rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
+    public int getCols() {
+        return this.cols;
+    }
+
+    public void setCols(int cols) {
+        this.cols = cols;
     }
 
     /** called by internal mechanisms, do not call yourself. */

@@ -71,13 +71,13 @@
                     android:text="{faw_fast_forward}" />
 
                 <Button
-                    android:id="@+id/play"
+                    android:id="@+id/animationPlay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="{faw_play}" />
 
                 <Button
-                    android:id="@+id/stop"
+                    android:id="@+id/animationStop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="{faw_stop}" />
@@ -91,19 +91,31 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/animationClear"
+                    android:id="@+id/frameSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_floppy_o}" />
+
+                <Button
+                    android:id="@+id/frameClear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="{faw_eraser}" />
 
                 <Button
-                    android:id="@+id/framePlus"
+                    android:id="@+id/frameDuplicate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_files-o}" />
+
+                <Button
+                    android:id="@+id/frameAdd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="{faw_plus}" />
 
                 <Button
-                    android:id="@+id/frameMinus"
+                    android:id="@+id/frameRemove"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="{faw_minus}" />

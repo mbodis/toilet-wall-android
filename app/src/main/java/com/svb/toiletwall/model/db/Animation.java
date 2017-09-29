@@ -32,7 +32,7 @@ public class Animation {
     private int cols;
 
     @ToMany(referencedJoinProperty = "animationId")
-    @OrderBy("id ASC")
+    @OrderBy("order ASC")
     private List<AnimationFrame> frames;
 
     /** Used to resolve relations */

@@ -1,6 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/preferences_category_title_dimensions" >
+    <PreferenceCategory android:title="@string/preferences_category_title_dimensions">
 
         <EditTextPreference
             android:defaultValue="2"
@@ -13,6 +13,15 @@
             android:key="display_block_cols"
             android:summary="@string/dimensions_cols_summary"
             android:title="@string/dimensions_cols_title" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preferences_category_title_animation">
+        <EditTextPreference
+            android:defaultValue="200"
+            android:key="frame_play_milis"
+            android:summary="@string/animation_play_time_summary"
+            android:title="@string/animation_play_time_title" />
 
     </PreferenceCategory>
 

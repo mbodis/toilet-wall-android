@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.activity.MainActivity;
 import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
+import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.model.ToiletDisplay;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.programs.AnimationProgram;
@@ -32,10 +33,14 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
 
     public static final String TAG = ListAdapterAnimation.class.getName();
     public Activity act;
+    private ProgramAnimationFragment animFragment;
 
     public List<Animation> list;
     private int lastPosition = -1;
     private String searchText;
+
+    private AnimationProgram program;
+
 
     public void setSearchText(String searchText) {
         this.searchText = searchText;
@@ -43,7 +48,7 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;
-        public TextView animName, animSize;
+        public TextView animName, animSize, animFrames;
         public Button playAnimationBtn;
 
         ViewHolder(View itemView, Context act) {
@@ -51,13 +56,15 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
             cardView = (CardView) itemView.findViewById(R.id.animationCardView);
             animName = ((TextView) cardView.findViewById(R.id.animationName));
             animSize = ((TextView) cardView.findViewById(R.id.animationSize));
+            animFrames = ((TextView) cardView.findViewById(R.id.animationFrames));
             playAnimationBtn = ((Button) cardView.findViewById(R.id.playAnimation));
         }
     }
 
-    public ListAdapterAnimation(Activity act, List<Animation> list) {
+    public ListAdapterAnimation(Activity act, List<Animation> list, ProgramAnimationFragment animFragment) {
         this.act = act;
         this.list = list;
+        this.animFragment = animFragment;
     }
 
     @Override
@@ -73,14 +80,13 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
         final Animation mAnimation = list.get(position);
 
         holder.animName.setText(mAnimation.getName());
-        holder.animSize.setText(mAnimation.getCols() * ToiletDisplay.BLOCK_LED_COLS + "x" + mAnimation.getRows() * ToiletDisplay.BLOCK_LED_ROWS + " pts");
+        holder.animSize.setText(mAnimation.getCols() * ToiletDisplay.BLOCK_LED_COLS + "x" + mAnimation.getRows() * ToiletDisplay.BLOCK_LED_ROWS
+                + " " + act.getString(R.string.animation_adapter_points));
+        holder.animFrames.setText(mAnimation.getFrames().size() + " " + act.getString(R.string.animation_adapter_frames));
         holder.playAnimationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AnimationProgram program = new AnimationProgram(
-                        ((MainActivity)act).getConnectedThread(),
-                        mAnimation);
-                program.playAnimationOnce();
+                animFragment.startProgram(position);
             }
         });
 

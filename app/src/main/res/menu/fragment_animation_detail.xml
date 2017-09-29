@@ -5,9 +5,4 @@
         android:id="@+id/action_delete"
         android:title="delete"
         app:showAsAction="always"></item>
-
-    <item
-        android:id="@+id/action_save_frame"
-        android:title="save frame"
-        app:showAsAction="always"></item>
 </menu>

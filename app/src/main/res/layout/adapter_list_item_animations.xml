@@ -44,7 +44,17 @@
                     android:paddingBottom="5dp"
                     android:paddingTop="5dp"
                     android:text="12x6 px"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/animationFrames"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="12 frames"
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <Button

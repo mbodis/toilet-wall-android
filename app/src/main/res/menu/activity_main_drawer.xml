@@ -6,6 +6,10 @@
             android:id="@+id/nav_connection"
             android:title="@string/nav_connection" />
         <item
+            android:id="@+id/nav_settings"
+            android:title="@string/nav_settings" />
+
+        <item
             android:id="@+id/nav_test"
             android:title="@string/nav_test" />
         <item
@@ -17,9 +21,7 @@
         <item
             android:id="@+id/nav_animation"
             android:title="@string/nav_animation" />
-        <item
-            android:id="@+id/nav_settings"
-            android:title="@string/nav_settings" />
+
     </group>
 
 </menu>

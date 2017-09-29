@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.adapter.ListAdapterAnimation;
@@ -23,6 +22,7 @@ import com.svb.toiletwall.dialog.CreateNewAnimationFragmentDialog;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.AnimationDao;
 import com.svb.toiletwall.model.db.DaoSession;
+import com.svb.toiletwall.programs.AnimationProgram;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -83,9 +83,14 @@ public class ProgramAnimationFragment extends ProgramListFragment implements Vie
     }
 
     @Override
-    void startProgram(int listIdx) {
+    public void startProgram(int listIdx) {
+        if (program != null && program instanceof AnimationProgram) {
+            ((AnimationProgram) program).stopAnimation();
+        }
         stopProgram();
-        // TODO implement
+        program = new AnimationProgram(getConnectedThread(),
+                mAdapter.list.get(listIdx));
+        ((AnimationProgram)program).playAnimationOnce();
     }
 
     @Override
@@ -122,7 +127,7 @@ public class ProgramAnimationFragment extends ProgramListFragment implements Vie
 
         mRecyclerView.setVisibility(View.VISIBLE);
         emptyList.setVisibility(View.INVISIBLE);
-        mAdapter = new ListAdapterAnimation(getActivity(), list);
+        mAdapter = new ListAdapterAnimation(getActivity(), list, this);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }

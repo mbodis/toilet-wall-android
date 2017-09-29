@@ -71,14 +71,14 @@ public class CreateNewAnimationFragmentDialog extends DialogFragment {
                             AnimationFrame animationFrame = new AnimationFrame();
                             animationFrame.setAnimationId(animation.getId());
                             animationFrame.setOrder(0);
-                            animationFrame.setPlayMilis(400); // TODO sh prefs
+                            animationFrame.setPlayMilis(MyShPrefs.getFrameDefaultPlayTime(getActivity()));
                             animationFrame.setContent(ToiletDisplay.getEmptyScreen(animation.getCols(), animation.getRows()));
                             daoSession.getAnimationFrameDao().insert(animationFrame);
 
                             db.setTransactionSuccessful();
                         }catch (Exception ex){
 
-                            Log.d(TAG, "transaction: " + ex.getMessage());
+                            Log.d(TAG, "creating animation: " + ex.getMessage());
                         }finally {
                             db.endTransaction();
                         }

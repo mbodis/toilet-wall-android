@@ -5,4 +5,8 @@
     <string name="dimensions_rows_title">Block rows</string>
     <string name="dimensions_cols_summary">Set number of block columns</string>
     <string name="dimensions_cols_title">Block columns</string>
+
+    <string name="preferences_category_title_animation">Animation</string>
+    <string name="animation_play_time_title">Frame play time</string>
+    <string name="animation_play_time_summary">Set default time to play animation frame</string>
 </resources>

@@ -29,16 +29,16 @@ import com.svb.toiletwall.model.ToiletDisplay;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.AnimationDao;
 import com.svb.toiletwall.model.db.AnimationFrame;
-import com.svb.toiletwall.model.db.AnimationFrameDao;
 import com.svb.toiletwall.model.db.DaoSession;
 import com.svb.toiletwall.programs.AnimationProgram;
 import com.svb.toiletwall.support.MyShPrefs;
 import com.svb.toiletwall.view.ToiletView;
 
+import org.greenrobot.greendao.database.Database;
+
 /**
  * Created by mbodis on 9/25/17.
  */
-
 public class ProgramAnimationDetailFragment extends ProgramFramgment implements View.OnClickListener {
 
     public static final String TAG = ProgramAnimationFragment.class.getName();
@@ -141,16 +141,19 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         animationPage = (TextView) mView.findViewById(R.id.animationPage);
         frameSpeed = (EditText) mView.findViewById(R.id.speed);
 
-        mView.findViewById(R.id.play).setOnClickListener(this);
-        mView.findViewById(R.id.stop).setOnClickListener(this);
+        mView.findViewById(R.id.animationPlay).setOnClickListener(this);
+        mView.findViewById(R.id.animationStop).setOnClickListener(this);
+
+        mView.findViewById(R.id.frameSave).setOnClickListener(this);
+        mView.findViewById(R.id.frameDuplicate).setOnClickListener(this);
+        mView.findViewById(R.id.frameAdd).setOnClickListener(this);
+        mView.findViewById(R.id.frameRemove).setOnClickListener(this);
+        mView.findViewById(R.id.frameClear).setOnClickListener(this);
 
         mView.findViewById(R.id.forwardStep).setOnClickListener(this);
         mView.findViewById(R.id.forwardFast).setOnClickListener(this);
         mView.findViewById(R.id.backwardStep).setOnClickListener(this);
         mView.findViewById(R.id.backwardFast).setOnClickListener(this);
-        mView.findViewById(R.id.framePlus).setOnClickListener(this);
-        mView.findViewById(R.id.frameMinus).setOnClickListener(this);
-        mView.findViewById(R.id.animationClear).setOnClickListener(this);
     }
 
     @Override
@@ -161,11 +164,6 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         menuItem.setIcon(new IconicsDrawable(getActivity())
                 .colorRes(R.color.actionBarIcons)
                 .icon(FontAwesome.Icon.faw_trash).actionBar());
-
-        menuItem = menu.findItem(R.id.action_save_frame);
-        menuItem.setIcon(new IconicsDrawable(getActivity())
-                .colorRes(R.color.actionBarIcons)
-                .icon(FontAwesome.Icon.faw_floppy_o).actionBar());
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -178,11 +176,6 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
             case R.id.action_delete:
                 DialogFragment newFragment = DeleteAnimationFragmentDialog.newInstance(animation.getId());
                 newFragment.show(getFragmentManager(), DeleteAnimationFragmentDialog.TAG);
-                break;
-
-            case R.id.action_save_frame:
-                saveCurrentFrame();
-                Toast.makeText(getActivity(), "frame saved", Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -199,11 +192,11 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                 }
                 break;
 
-            case R.id.play:
+            case R.id.animationPlay:
                 play();
                 break;
 
-            case R.id.stop:
+            case R.id.animationStop:
                 stop();
                 break;
 
@@ -223,18 +216,25 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                 firstFrame();
                 break;
 
-            case R.id.animationClear:
+            case R.id.frameClear:
                 clearFrame();
                 break;
 
-            case R.id.framePlus:
+            case R.id.frameAdd:
                 addFrame();
                 break;
 
-            case R.id.frameMinus:
+            case R.id.frameRemove:
                 removeFrame();
                 break;
 
+            case R.id.frameDuplicate:
+                duplicateFrame();
+                break;
+
+            case R.id.frameSave:
+                saveCurrentFrame();
+                break;
         }
     }
 
@@ -262,7 +262,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
 
     private void reloadContent(Animation animation) {
         if (animation == null) {
-            Toast.makeText(getActivity(), "unnable to retrieve animation", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.animation_unable_to_retrieve_animation, Toast.LENGTH_SHORT).show();
             getActivity().onBackPressed();
             return;
         }
@@ -270,48 +270,48 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         this.animation = animation;
         titleAnimation.setText(this.animation.getName());
 
-        updatePagination();
+        setPagination();
         renderDrawView();
-        updateMilis();
+        setFrameMilliseconds();
     }
 
-    private void updatePagination() {
-        animationPage.setText((currentFrame+1) + "/" + animation.getFrames().size());
+    private void setPagination() {
+        animationPage.setText((currentFrame + 1) + "/" + animation.getFrames().size());
     }
 
     private void nextFrame() {
-        if (currentFrame < (animation.getFrames().size()-1)) {
+        if (currentFrame < (animation.getFrames().size() - 1)) {
             currentFrame = currentFrame + 1;
-            updatePagination();
+            setPagination();
             renderDrawView();
-            updateMilis();
+            setFrameMilliseconds();
         }
     }
 
     private void prevFrame() {
         if (currentFrame > 0) {
             currentFrame = currentFrame - 1;
-            updatePagination();
+            setPagination();
             renderDrawView();
-            updateMilis();
+            setFrameMilliseconds();
         }
     }
 
     private void firstFrame() {
         if (currentFrame != 0) {
             currentFrame = 0;
-            updatePagination();
+            setPagination();
             renderDrawView();
-            updateMilis();
+            setFrameMilliseconds();
         }
     }
 
     private void lastFrame() {
-        if (currentFrame != (animation.getFrames().size()-1)) {
+        if (currentFrame != (animation.getFrames().size() - 1)) {
             currentFrame = animation.getFrames().size() - 1;
-            updatePagination();
+            setPagination();
             renderDrawView();
-            updateMilis();
+            setFrameMilliseconds();
         }
     }
 
@@ -319,28 +319,29 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         AnimationFrame animationFrame = new AnimationFrame();
         animationFrame.setAnimationId(animation.getId());
         animationFrame.setOrder(animation.getFrames().size()); // first frame is 0
-        animationFrame.setPlayMilis(400); // TODO sh prefs
+        animationFrame.setPlayMilis(MyShPrefs.getFrameDefaultPlayTime(getActivity()));
         animationFrame.setContent(ToiletDisplay.getEmptyScreen(animation.getCols(), animation.getRows()));
         daoSession.getAnimationFrameDao().insert(animationFrame);
         daoSession.clear();
 
         retrieveListItems();
-        Toast.makeText(getActivity(), "new frame added", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.animation_new_frame_added, Toast.LENGTH_SHORT).show();
     }
 
     private void removeFrame() {
         if (animation.getFrames().size() > 1) {
-            if (currentFrame == (animation.getFrames().size()-1)){
-                currentFrame--;
-            }
 
             animation.getFrames().get(currentFrame).delete();
             daoSession.clear();
 
+            if (currentFrame == (animation.getFrames().size() - 1)) {
+                currentFrame--;
+            }
 
             retrieveListItems();
+            Toast.makeText(getActivity(), R.string.animation_frame_deleted, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getActivity(), "last frame cannot be removed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.animation_last_frame_cannot_be_removed, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -348,6 +349,42 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         animation.getFrames().get(currentFrame).setContent(program.getToiletDisplay().getFrameFromScreen());
         animation.getFrames().get(currentFrame).setPlayMilis(Integer.parseInt(frameSpeed.getText().toString()));
         animation.getFrames().get(currentFrame).update();
+        Toast.makeText(getActivity(), R.string.animation_frame_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    private void duplicateFrame() {
+        DaoSession daoSession = ((App) getActivity().getApplication()).getDaoSession();
+        Database db = daoSession.getDatabase();
+        db.beginTransaction();
+
+        try {
+            // reorder items
+            for (AnimationFrame af : animation.getFrames()){
+                if (af.getOrder() >= currentFrame){
+                    af.setOrder(af.getOrder() + 1);
+                    af.update();
+                }
+            }
+
+            // add new frame
+            AnimationFrame animationFrame = new AnimationFrame();
+            animationFrame.setAnimationId(animation.getId());
+            animationFrame.setOrder(currentFrame + 1); // first frame is 0
+            animationFrame.setPlayMilis(MyShPrefs.getFrameDefaultPlayTime(getActivity()));
+            animationFrame.setContent(animation.getFrames().get(currentFrame).getContent());
+            daoSession.getAnimationFrameDao().insert(animationFrame);
+
+            db.setTransactionSuccessful();
+        } catch (Exception ex) {
+
+            Log.d(TAG, "duplicateFrame: " + ex.getMessage());
+        } finally {
+            db.endTransaction();
+        }
+        daoSession.clear();
+
+        retrieveListItems();
+        Toast.makeText(getActivity(), R.string.animation_frame_duplicated, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -357,7 +394,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         program.getToiletDisplay().setScreenByFrame(animation.getFrames().get(currentFrame));
     }
 
-    private void updateMilis() {
+    private void setFrameMilliseconds() {
         frameSpeed.setText(animation.getFrames().get(currentFrame).getPlayMilis() + "");
     }
 

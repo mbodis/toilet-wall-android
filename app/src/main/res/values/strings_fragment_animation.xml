@@ -2,6 +2,7 @@
 <resources>
     <string name="animation_adapter_frames">frame/s</string>
     <string name="animation_adapter_points">pts</string>
+    <string name="animation_millis">millis</string>
     <string name="animation_no_animations_available">No animation available</string>
     <string name="animation_frame_saved">frame saved</string>
     <string name="animation_last_frame_cannot_be_removed">last frame cannot be removed</string>
@@ -9,4 +10,5 @@
     <string name="animation_new_frame_added">new frame added</string>
     <string name="animation_frame_duplicated">frame duplicated</string>
     <string name="animation_unable_to_retrieve_animation">unable to retrieve animation</string>
+    <string name="animation_continue_to_next_frame">frame saved, duplicated</string>
 </resources>

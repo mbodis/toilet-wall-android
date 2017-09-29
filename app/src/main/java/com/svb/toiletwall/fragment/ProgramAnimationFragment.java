@@ -90,7 +90,7 @@ public class ProgramAnimationFragment extends ProgramListFragment implements Vie
         stopProgram();
         program = new AnimationProgram(getConnectedThread(),
                 mAdapter.list.get(listIdx));
-        ((AnimationProgram)program).playAnimationOnce();
+        ((AnimationProgram)program).playAnimationLoop();
     }
 
     @Override

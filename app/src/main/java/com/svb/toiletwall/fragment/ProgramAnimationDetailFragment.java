@@ -144,6 +144,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         mView.findViewById(R.id.animationPlay).setOnClickListener(this);
         mView.findViewById(R.id.animationStop).setOnClickListener(this);
 
+        mView.findViewById(R.id.frameContinue).setOnClickListener(this);
         mView.findViewById(R.id.frameSave).setOnClickListener(this);
         mView.findViewById(R.id.frameDuplicate).setOnClickListener(this);
         mView.findViewById(R.id.frameAdd).setOnClickListener(this);
@@ -214,6 +215,10 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
 
             case R.id.backwardFast:
                 firstFrame();
+                break;
+
+            case R.id.frameContinue:
+                frameContinue();
                 break;
 
             case R.id.frameClear:
@@ -345,6 +350,12 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         }
     }
 
+    private void frameContinue(){
+        saveCurrentFrame();
+        duplicateFrame();
+        Toast.makeText(getActivity(), R.string.animation_continue_to_next_frame, Toast.LENGTH_SHORT).show();
+    }
+
     private void saveCurrentFrame() {
         animation.getFrames().get(currentFrame).setContent(program.getToiletDisplay().getFrameFromScreen());
         animation.getFrames().get(currentFrame).setPlayMilis(Integer.parseInt(frameSpeed.getText().toString()));
@@ -374,13 +385,15 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
             animationFrame.setContent(animation.getFrames().get(currentFrame).getContent());
             daoSession.getAnimationFrameDao().insert(animationFrame);
 
+            currentFrame++;
             db.setTransactionSuccessful();
         } catch (Exception ex) {
-
+            currentFrame--;
             Log.d(TAG, "duplicateFrame: " + ex.getMessage());
         } finally {
             db.endTransaction();
         }
+
         daoSession.clear();
 
         retrieveListItems();
@@ -400,7 +413,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
 
     private void play() {
         ((AnimationProgram) program).setFrames(animation.getFrames());
-        ((AnimationProgram) program).playAnimationOnce();
+        ((AnimationProgram) program).playAnimationLoop();
     }
 
     private void stop() {

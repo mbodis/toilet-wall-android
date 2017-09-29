@@ -45,12 +45,12 @@ public class AnimationProgram extends ProgramIface {
         }
     }
 
-    public void playAnimationOnce(){
+    public void playAnimationLoop(){
         isPlaying = true;
     }
 
     public void stopAnimation(){
-        currentFrame = frames.size();
+        isPlaying = false;
     }
 
     public void setFrames(List<AnimationFrame> frames){
@@ -65,9 +65,7 @@ public class AnimationProgram extends ProgramIface {
     private void endAnimation() {
         currentFrame++;
         if (currentFrame >= frames.size()){
-            isPlaying = false;
             currentFrame = 0;
-            mToiletDisplay.clearScreen();
         }
     }
 }

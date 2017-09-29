@@ -3,15 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:padding="6dp"
         android:text="Program Animation"
         android:textSize="16dp"
         android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="400" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/animation_millis" />
+    </LinearLayout>
+
 
     <com.svb.toiletwall.view.ToiletView
         android:id="@+id/drawView"
@@ -91,6 +113,12 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/frameContinue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{faw_key}" />
+
+                <Button
                     android:id="@+id/frameSave"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -120,19 +148,6 @@
                     android:layout_height="wrap_content"
                     android:text="{faw_minus}" />
 
-                <EditText
-                    android:id="@+id/speed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:text="400" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="milisec" />
             </LinearLayout>
 
         </LinearLayout>

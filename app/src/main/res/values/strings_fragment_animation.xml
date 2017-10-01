@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="animation_action_delete">delete</string>
+    <string name="animation_action_global_frame_rate">change all frames frame-rate</string>
+
     <string name="animation_adapter_frames">frame/s</string>
     <string name="animation_adapter_points">pts</string>
     <string name="animation_millis">millis</string>

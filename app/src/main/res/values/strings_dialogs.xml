@@ -13,6 +13,9 @@
     <string name="dialog_animation_set_name">Set animation name</string>
     <string name="dialog_animation_invalid_name">Name is not set.</string>
 
+    <string name="dialog_global_frame_rate_title">Set global frame rate</string>
+    <string name="dialog_global_frame_rate_invalid_input">Time is not set.</string>
+
     <string name="dialog_delete_animation_title">Delete animation</string>
     <string name="dialog_delete_animation_message">Are you sure you want to delete selected animation?</string>
 </resources>

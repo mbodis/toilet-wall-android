@@ -25,6 +25,7 @@ import com.svb.toiletwall.R;
 import com.svb.toiletwall.application.App;
 import com.svb.toiletwall.dialog.DeleteAnimationFragmentDialog;
 import com.svb.toiletwall.dialog.EditAnimationNameFragmentDialog;
+import com.svb.toiletwall.dialog.SetGlobalFrameRateFragmentDialog;
 import com.svb.toiletwall.model.ToiletDisplay;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.AnimationDao;
@@ -46,6 +47,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
     public static final String ARG_ANIMATION_NAME = "animationName";
 
     public static final String ACTION_UPDATE_NAME = "action_update";
+    public static final String ACTION_RELOAD_CONTENT = "action_reload_content";
 
     private View loadingView;
     private EditText frameSpeed;
@@ -72,8 +74,13 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
     }
 
     public static void updateAnimationNameView(Activity act, String name) {
-        Intent intent = new Intent();
+        Intent intent = new Intent(ACTION_UPDATE_NAME);
         intent.putExtra(ARG_ANIMATION_NAME, name);
+        act.sendBroadcast(intent);
+    }
+
+    public static void reloadItem(Activity act){
+        Intent intent = new Intent(ACTION_RELOAD_CONTENT);
         act.sendBroadcast(intent);
     }
 
@@ -86,6 +93,8 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                     if (name != null) {
                         titleAnimation.setText(name);
                     }
+                }else if (intent.getAction().equals(ACTION_RELOAD_CONTENT)) {
+                    retrieveItem();
                 }
             }
         }
@@ -109,8 +118,9 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
     @Override
     public void onResume() {
         super.onResume();
-        retrieveListItems();
+        retrieveItem();
         getActivity().registerReceiver(mBroadcastReceiver, new IntentFilter(ACTION_UPDATE_NAME));
+        getActivity().registerReceiver(mBroadcastReceiver, new IntentFilter(ACTION_RELOAD_CONTENT));
     }
 
     @Override
@@ -166,6 +176,11 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                 .colorRes(R.color.actionBarIcons)
                 .icon(FontAwesome.Icon.faw_trash).actionBar());
 
+        menuItem = menu.findItem(R.id.action_frame_rate);
+        menuItem.setIcon(new IconicsDrawable(getActivity())
+                .colorRes(R.color.actionBarIcons)
+                .icon(FontAwesome.Icon.faw_clock_o).actionBar());
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -177,6 +192,11 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
             case R.id.action_delete:
                 DialogFragment newFragment = DeleteAnimationFragmentDialog.newInstance(animation.getId());
                 newFragment.show(getFragmentManager(), DeleteAnimationFragmentDialog.TAG);
+                break;
+
+            case R.id.action_frame_rate:
+                DialogFragment newFragment2 = SetGlobalFrameRateFragmentDialog.newInstance(animation.getId());
+                newFragment2.show(getFragmentManager(), SetGlobalFrameRateFragmentDialog.TAG);
                 break;
         }
 
@@ -253,7 +273,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         drawView.startDrawImage();
     }
 
-    private void retrieveListItems() {
+    private void retrieveItem() {
         try {
             if (mAsyncRetrieveAnimation != null && !mAsyncRetrieveAnimation.isCancelled()) {
                 mAsyncRetrieveAnimation.cancel(true);
@@ -329,7 +349,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         daoSession.getAnimationFrameDao().insert(animationFrame);
         daoSession.clear();
 
-        retrieveListItems();
+        retrieveItem();
         Toast.makeText(getActivity(), R.string.animation_new_frame_added, Toast.LENGTH_SHORT).show();
     }
 
@@ -343,7 +363,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                 currentFrame--;
             }
 
-            retrieveListItems();
+            retrieveItem();
             Toast.makeText(getActivity(), R.string.animation_frame_deleted, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getActivity(), R.string.animation_last_frame_cannot_be_removed, Toast.LENGTH_SHORT).show();
@@ -396,7 +416,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
 
         daoSession.clear();
 
-        retrieveListItems();
+        retrieveItem();
         Toast.makeText(getActivity(), R.string.animation_frame_duplicated, Toast.LENGTH_SHORT).show();
     }
 

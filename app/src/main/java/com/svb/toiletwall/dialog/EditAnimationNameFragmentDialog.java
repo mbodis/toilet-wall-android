@@ -27,10 +27,10 @@ public class EditAnimationNameFragmentDialog extends DialogFragment {
 
     private static final String ARG_ANIMATION_ID = "animationId";
 
-    public static EditAnimationNameFragmentDialog newInstance(long animationIn) {
+    public static EditAnimationNameFragmentDialog newInstance(long animationId) {
         EditAnimationNameFragmentDialog frag = new EditAnimationNameFragmentDialog();
         Bundle mBundle = new Bundle();
-        mBundle.putLong(ARG_ANIMATION_ID, animationIn);
+        mBundle.putLong(ARG_ANIMATION_ID, animationId);
         frag.setArguments(mBundle);
         return frag;
     }

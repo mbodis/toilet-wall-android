@@ -14,4 +14,17 @@
     <string name="animation_frame_duplicated">frame duplicated</string>
     <string name="animation_unable_to_retrieve_animation">unable to retrieve animation</string>
     <string name="animation_continue_to_next_frame">frame saved, duplicated</string>
+    
+    <string name="animation_hint_animation_play">hint: play frames</string>
+    <string name="animation_hint_animation_stop">hint: stop playback</string>
+    <string name="animation_hint_forward_step">hint: move to next frame</string>
+    <string name="animation_hint_forward_fast">hint: move to last frame</string>
+    <string name="animation_hint_backward_step">hint: move to previous frame</string>
+    <string name="animation_hint_backward_fast">hint: move to first frame</string>
+    <string name="animation_hint_frame_continue">hint: save current and duplicate it </string>
+    <string name="animation_hint_frame_clear">hint: clear frame content</string>
+    <string name="animation_hint_frame_add">hint: add new frame</string>
+    <string name="animation_hint_frame_remove">hint: remove current frame</string>
+    <string name="animation_hint_frame_duplicate">hint: duplicate current frame and move to it</string>
+    <string name="animation_hint_frame_save">hint: save current image</string>
 </resources>

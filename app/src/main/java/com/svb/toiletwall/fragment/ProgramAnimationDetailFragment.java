@@ -40,7 +40,7 @@ import org.greenrobot.greendao.database.Database;
 /**
  * Created by mbodis on 9/25/17.
  */
-public class ProgramAnimationDetailFragment extends ProgramFramgment implements View.OnClickListener {
+public class ProgramAnimationDetailFragment extends ProgramFramgment implements View.OnClickListener, View.OnLongClickListener {
 
     public static final String TAG = ProgramAnimationFragment.class.getName();
     public static final String ARG_ANIMATION_ID = "animationId";
@@ -79,7 +79,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         act.sendBroadcast(intent);
     }
 
-    public static void reloadItem(Activity act){
+    public static void reloadItem(Activity act) {
         Intent intent = new Intent(ACTION_RELOAD_CONTENT);
         act.sendBroadcast(intent);
     }
@@ -93,7 +93,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                     if (name != null) {
                         titleAnimation.setText(name);
                     }
-                }else if (intent.getAction().equals(ACTION_RELOAD_CONTENT)) {
+                } else if (intent.getAction().equals(ACTION_RELOAD_CONTENT)) {
                     retrieveItem();
                 }
             }
@@ -153,18 +153,30 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
 
         mView.findViewById(R.id.animationPlay).setOnClickListener(this);
         mView.findViewById(R.id.animationStop).setOnClickListener(this);
-
         mView.findViewById(R.id.frameContinue).setOnClickListener(this);
         mView.findViewById(R.id.frameSave).setOnClickListener(this);
         mView.findViewById(R.id.frameDuplicate).setOnClickListener(this);
         mView.findViewById(R.id.frameAdd).setOnClickListener(this);
         mView.findViewById(R.id.frameRemove).setOnClickListener(this);
         mView.findViewById(R.id.frameClear).setOnClickListener(this);
-
         mView.findViewById(R.id.forwardStep).setOnClickListener(this);
         mView.findViewById(R.id.forwardFast).setOnClickListener(this);
         mView.findViewById(R.id.backwardStep).setOnClickListener(this);
         mView.findViewById(R.id.backwardFast).setOnClickListener(this);
+
+        mView.findViewById(R.id.animationPlay).setOnLongClickListener(this);
+        mView.findViewById(R.id.animationStop).setOnLongClickListener(this);
+        mView.findViewById(R.id.frameContinue).setOnLongClickListener(this);
+        mView.findViewById(R.id.frameSave).setOnLongClickListener(this);
+        mView.findViewById(R.id.frameDuplicate).setOnLongClickListener(this);
+        mView.findViewById(R.id.frameAdd).setOnLongClickListener(this);
+        mView.findViewById(R.id.frameRemove).setOnLongClickListener(this);
+        mView.findViewById(R.id.frameClear).setOnLongClickListener(this);
+        mView.findViewById(R.id.forwardStep).setOnLongClickListener(this);
+        mView.findViewById(R.id.forwardFast).setOnLongClickListener(this);
+        mView.findViewById(R.id.backwardStep).setOnLongClickListener(this);
+        mView.findViewById(R.id.backwardFast).setOnLongClickListener(this);
+
     }
 
     @Override
@@ -238,7 +250,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                 break;
 
             case R.id.frameContinue:
-                frameContinue();
+                frameContinue(true);
                 break;
 
             case R.id.frameClear:
@@ -246,21 +258,76 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
                 break;
 
             case R.id.frameAdd:
-                addFrame();
+                addFrame(true);
                 break;
 
             case R.id.frameRemove:
-                removeFrame();
+                removeFrame(true);
                 break;
 
             case R.id.frameDuplicate:
-                duplicateFrame();
+                duplicateFrame(true);
                 break;
 
             case R.id.frameSave:
-                saveCurrentFrame();
+                saveCurrentFrame(true);
                 break;
         }
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        switch (view.getId()) {
+            case R.id.animationPlay:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_animation_play), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.animationStop:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_animation_stop), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.forwardStep:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_forward_step), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.forwardFast:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_forward_fast), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.backwardStep:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_backward_step), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.backwardFast:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_backward_fast), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.frameContinue:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_frame_continue), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.frameClear:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_frame_clear), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.frameAdd:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_frame_add), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.frameRemove:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_frame_remove), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.frameDuplicate:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_frame_duplicate), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.frameSave:
+                Toast.makeText(getActivity(), getString(R.string.animation_hint_frame_save), Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        return true;
     }
 
     @Override
@@ -340,7 +407,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         }
     }
 
-    private void addFrame() {
+    private void addFrame(boolean toast) {
         AnimationFrame animationFrame = new AnimationFrame();
         animationFrame.setAnimationId(animation.getId());
         animationFrame.setOrder(animation.getFrames().size()); // first frame is 0
@@ -350,10 +417,12 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         daoSession.clear();
 
         retrieveItem();
-        Toast.makeText(getActivity(), R.string.animation_new_frame_added, Toast.LENGTH_SHORT).show();
+        if (toast) {
+            Toast.makeText(getActivity(), R.string.animation_new_frame_added, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void removeFrame() {
+    private void removeFrame(boolean showToast) {
         if (animation.getFrames().size() > 1) {
 
             animation.getFrames().get(currentFrame).delete();
@@ -364,34 +433,40 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
             }
 
             retrieveItem();
-            Toast.makeText(getActivity(), R.string.animation_frame_deleted, Toast.LENGTH_SHORT).show();
+            if (showToast) {
+                Toast.makeText(getActivity(), R.string.animation_frame_deleted, Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(getActivity(), R.string.animation_last_frame_cannot_be_removed, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void frameContinue(){
-        saveCurrentFrame();
-        duplicateFrame();
-        Toast.makeText(getActivity(), R.string.animation_continue_to_next_frame, Toast.LENGTH_SHORT).show();
+    private void frameContinue(boolean showToast) {
+        saveCurrentFrame(false);
+        duplicateFrame(false);
+        if (showToast) {
+            Toast.makeText(getActivity(), R.string.animation_continue_to_next_frame, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void saveCurrentFrame() {
+    private void saveCurrentFrame(boolean showToast) {
         animation.getFrames().get(currentFrame).setContent(program.getToiletDisplay().getFrameFromScreen());
         animation.getFrames().get(currentFrame).setPlayMilis(Integer.parseInt(frameSpeed.getText().toString()));
         animation.getFrames().get(currentFrame).update();
-        Toast.makeText(getActivity(), R.string.animation_frame_saved, Toast.LENGTH_SHORT).show();
+        if (showToast) {
+            Toast.makeText(getActivity(), R.string.animation_frame_saved, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void duplicateFrame() {
+    private void duplicateFrame(boolean showToast) {
         DaoSession daoSession = ((App) getActivity().getApplication()).getDaoSession();
         Database db = daoSession.getDatabase();
         db.beginTransaction();
 
         try {
             // reorder items
-            for (AnimationFrame af : animation.getFrames()){
-                if (af.getOrder() >= currentFrame){
+            for (AnimationFrame af : animation.getFrames()) {
+                if (af.getOrder() >= currentFrame) {
                     af.setOrder(af.getOrder() + 1);
                     af.update();
                 }
@@ -417,7 +492,9 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         daoSession.clear();
 
         retrieveItem();
-        Toast.makeText(getActivity(), R.string.animation_frame_duplicated, Toast.LENGTH_SHORT).show();
+        if (showToast) {
+            Toast.makeText(getActivity(), R.string.animation_frame_duplicated, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

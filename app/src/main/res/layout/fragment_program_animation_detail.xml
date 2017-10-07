@@ -8,7 +8,7 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="6dp"
+        android:padding="10dp"
         android:text="Program Animation"
         android:textSize="16dp"
         android:textStyle="bold" />
@@ -116,7 +116,7 @@
                     android:id="@+id/frameContinue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{faw_key}" />
+                    android:text="{faw_floppy_o} {faw_files-o}" />
 
                 <Button
                     android:id="@+id/frameSave"
@@ -140,13 +140,13 @@
                     android:id="@+id/frameAdd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{faw_plus}" />
+                    android:text="{faw_plus_square}" />
 
                 <Button
                     android:id="@+id/frameRemove"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{faw_minus}" />
+                    android:text="{faw_minus_square}" />
 
             </LinearLayout>
 

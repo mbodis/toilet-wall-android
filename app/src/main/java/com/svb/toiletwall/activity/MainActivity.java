@@ -40,6 +40,7 @@ import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.fragment.ProgramDrawFragment;
 import com.svb.toiletwall.fragment.ProgramRandomFragment;
 import com.svb.toiletwall.fragment.ProgramTestFragment;
+import com.svb.toiletwall.fragment.ProgramTextFragment;
 import com.svb.toiletwall.fragment.SettingsFragment;
 
 import java.io.IOException;
@@ -61,7 +62,8 @@ public class MainActivity extends AppCompatActivity
     public static final int PAGE_DRAW = 30;
     public static final int PAGE_ANIMATION = 40;
     public static final int PAGE_ANIMATION_DETAIL = 41;
-    public static final int PAGE_SETTINGS = 50;
+    public static final int PAGE_TEXT = 50;
+    public static final int PAGE_SETTINGS = 60;
 
     // GUI Components
     private View connectingLl, fragmentContainer;
@@ -163,6 +165,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_animation) {
             setFragmentAsMain(PAGE_ANIMATION, null);
+
+        } else if (id == R.id.nav_text) {
+            setFragmentAsMain(PAGE_TEXT, null);
 
         } else if (id == R.id.nav_settings) {
             setFragmentAsMain(PAGE_SETTINGS, null);
@@ -304,6 +309,10 @@ public class MainActivity extends AppCompatActivity
         mainMenu.setIcon(new IconicsDrawable(this)
                 .icon(FontAwesome.Icon.faw_code)
                 .sizeDp(menuIconSize));
+        mainMenu = mMenu.findItem(R.id.nav_text);
+        mainMenu.setIcon(new IconicsDrawable(this)
+                .icon(FontAwesome.Icon.faw_code)
+                .sizeDp(menuIconSize));
         mainMenu = mMenu.findItem(R.id.nav_settings);
         mainMenu.setIcon(new IconicsDrawable(this)
                 .icon(FontAwesome.Icon.faw_cogs)
@@ -349,6 +358,12 @@ public class MainActivity extends AppCompatActivity
                 toggleViews(false, true);
                 frTransaction.replace(R.id.container,
                         ProgramAnimationFragment.newInstance(args), ProgramAnimationFragment.TAG);
+                break;
+
+            case PAGE_TEXT:
+                toggleViews(false, true);
+                frTransaction.replace(R.id.container,
+                        ProgramTextFragment.newInstance(args), ProgramTextFragment.TAG);
                 break;
 
             case PAGE_SETTINGS:

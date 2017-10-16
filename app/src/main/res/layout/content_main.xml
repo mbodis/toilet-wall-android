@@ -27,14 +27,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:text="Show paired" />
+                android:text="@string/bt_show_paired" />
 
             <Button
                 android:id="@+id/discover"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:text="Discover Devices" />
+                android:text="@string/bt_discover_devices" />
 
         </LinearLayout>
 
@@ -50,9 +50,9 @@
     </LinearLayout>
 
     <FrameLayout
-        android:layout_marginTop="45dp"
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp" />
 
 </RelativeLayout>

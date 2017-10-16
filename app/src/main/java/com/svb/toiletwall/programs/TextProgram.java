@@ -9,7 +9,7 @@ import com.svb.toiletwall.bluetooth.ConnectedThread;
 public class TextProgram extends ProgramIface {
 
     public TextProgram(int cols, int rows, ConnectedThread mConnectedThread) {
-        super(cols, rows, mConnectedThread, 500);
+        super(cols, rows, mConnectedThread, 50);
     }
 
     @Override

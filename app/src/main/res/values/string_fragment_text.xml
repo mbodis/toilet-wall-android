@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="program_text_title">Program Text</string>
+    <string name="program_text_px">px</string>
+    <string name="program_text_ms">ms</string>
+    <string name="program_text_font_size">font size</string>
+    <string name="program_text_font_speed">font speed</string>
+    <string name="program_text_message_hint">place your text here</string>
+</resources>

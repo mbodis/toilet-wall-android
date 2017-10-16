@@ -1,12 +1,13 @@
 package com.svb.toiletwall.fragment;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,32 +15,38 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.svb.toiletwall.R;
-import com.svb.toiletwall.programs.DrawProgram;
 import com.svb.toiletwall.programs.TextProgram;
 import com.svb.toiletwall.support.MyShPrefs;
 import com.svb.toiletwall.view.ToiletView;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Created by mbodis on 10/15/17.
  */
 
-public class ProgramTextFragment extends ProgramFramgment {
+public class ProgramTextFragment extends ProgramFramgment{
 
     public static final String TAG = ProgramTextFragment.class.getName();
 
+    // layout
     private ToiletView drawView;
     private EditText textSpeedET, textSizeET, textMessageET;
 
-    boolean canvasInitialized = false;
-    Bitmap bmp;
-    Canvas canvas;
-    int canvasWidth = 100, canvasHeight = 100;
-    Paint black, white;
+    // canvas
+    private boolean canvasInitialized = false;
+    private Bitmap bmp;
+    private Canvas canvas;
+    private int canvasWidth = 100, canvasHeight = 100;
+    private Paint blackPaint, whitePaint;
 
-    int textOffsetY = -2; // TODO ?
-    int textSize = 9; // TODO use input
-    int textPosX = 0; // TODO loop position - use speed input
-
+    // text settings
+    private int textOffsetY = -1;
+    private int textSize = 9;
+    private int textPosX = 0;
+    private int textSpeed = 500; // default speed
+    private int textWidth = 0;
+    String message = "";
 
     public static ProgramTextFragment newInstance(Bundle args) {
         ProgramTextFragment fragment = new ProgramTextFragment();
@@ -61,19 +68,83 @@ public class ProgramTextFragment extends ProgramFramgment {
         drawView = (ToiletView) mView.findViewById(R.id.drawView);
 
         textSpeedET = (EditText) mView.findViewById(R.id.textSpeedInput);
+        textSpeedET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    textSpeed = Integer.parseInt(charSequence.toString());
+                    textSettingsChanged();
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         textSizeET = (EditText) mView.findViewById(R.id.textSizeInput);
+        textSizeET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    textSize = Integer.parseInt(charSequence.toString());
+                    textSettingsChanged();
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         textMessageET = (EditText) mView.findViewById(R.id.textInput);
+        textMessageET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    message = charSequence.toString().trim();
+                    textSettingsChanged();
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     private void initColors() {
-        black = new Paint();
-        black.setColor(Color.BLACK);
-        black.setStrokeWidth(1);
-        black.setStyle(Paint.Style.FILL);
+        blackPaint = new Paint();
+        blackPaint.setColor(Color.BLACK);
+        blackPaint.setStrokeWidth(1);
+        blackPaint.setStyle(Paint.Style.FILL);
 
-        white = new Paint();
-        white.setColor(Color.WHITE);
-        white.setTextSize(textSize);
+        whitePaint = new Paint();
+        whitePaint.setColor(Color.WHITE);
+        whitePaint.setTextSize(textSize);
     }
 
     private void initCanvas() {
@@ -83,17 +154,33 @@ public class ProgramTextFragment extends ProgramFramgment {
         canvasInitialized = true;
     }
 
+    synchronized private void textSettingsChanged() {
+        // get text length Px
+        Rect bounds = new Rect();
+        whitePaint.getTextBounds(message, 0, message.length(), bounds);
+
+        textWidth = bounds.width();
+        textPosX = program.getToiletDisplay().getLedColumns();//textWidth;
+        initColors();
+    }
+
     private void clearCanvas() {
         if (!canvasInitialized) return;
+        canvas.drawRect(new Rect(0, 0, canvasWidth, canvasHeight), blackPaint);
+    }
 
-        canvas.drawRect(new Rect(0, 0, canvasWidth, canvasHeight), black);
+    synchronized private void moveLetters() {
+        textPosX--;
+        if ((textPosX+1) == -textWidth) {
+            textPosX = program.getToiletDisplay().getLedColumns();
+        }
     }
 
     private void drawText() {
 
         if (!canvasInitialized) return;
 
-        canvas.drawText(textMessageET.getText().toString().trim(), textPosX, textSize + textOffsetY, white);
+        canvas.drawText(message, textPosX, textSize + textOffsetY, whitePaint);
 
         for (int r = 0; r < program.getToiletDisplay().getLedRows(); r++) {
             for (int c = 0; c < program.getToiletDisplay().getLedColumns(); c++) {
@@ -121,6 +208,12 @@ public class ProgramTextFragment extends ProgramFramgment {
                 super.logicExecute();
                 clearCanvas();
                 drawText();
+                try {
+                    sleep(textSpeed);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                moveLetters();
             }
         };
         drawView.setToiletDisplay(program.getToiletDisplay());
@@ -138,8 +231,8 @@ public class ProgramTextFragment extends ProgramFramgment {
         Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
         Bitmap bmp = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
         Canvas canvas = new Canvas(bmp);
-        canvas.drawRect(new Rect(0, 0, w, h), black);
-        canvas.drawText("test", 0, textSize - 3, white);
+        canvas.drawRect(new Rect(0, 0, w, h), blackPaint);
+        canvas.drawText("test", 0, textSize - 3, whitePaint);
         for (int r = 0; r < 100; r++) {
             String d = "";
             for (int c = 0; c < 100; c++) {

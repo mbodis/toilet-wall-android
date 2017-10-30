@@ -1,7 +1,11 @@
 package com.svb.toiletwall.programs;
 
+import android.util.Log;
+
 import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.model.ToiletDisplay;
+
+import java.util.Arrays;
 
 import static java.lang.Thread.sleep;
 
@@ -10,6 +14,8 @@ import static java.lang.Thread.sleep;
  */
 
 public abstract class ProgramIface {
+
+    public static final String TAG = ProgramIface.class.getName();
 
     // rendering
     Thread renderThread;
@@ -23,6 +29,8 @@ public abstract class ProgramIface {
     ToiletDisplay mToiletDisplay;
     int blockColumns = 0;
     int blockRows = 0;
+
+    boolean lastScreen[][] = null;
 
     ConnectedThread mConnectedThread;
 
@@ -41,8 +49,16 @@ public abstract class ProgramIface {
         renderThread = new Thread(new Runnable() {
             @Override
             public void run() {
+
                 while (renderThreadAlive) {
-                    mToiletDisplay.sendScreenViaBt(mConnectedThread);
+
+                    if(hasScreenChanged(mToiletDisplay.getScreen())) {
+
+                        // TODO implement compressed protocol: sends only changed blocks
+
+                        mToiletDisplay.sendScreenViaBt(mConnectedThread);
+                        saveScreen(mToiletDisplay);
+                    }
 
                     try {
                         sleep(40); // 25 frame per second == 40 ms wait
@@ -53,6 +69,26 @@ public abstract class ProgramIface {
             }
         });
         renderThread.start();
+    }
+
+    private void saveScreen(ToiletDisplay mToiletDisplay) {
+        this.lastScreen = new boolean[mToiletDisplay.getLedColumns()][mToiletDisplay.getLedRows()];
+        for (int c = 0; c < mToiletDisplay.getLedColumns(); c++) {
+            for (int r = 0; r < mToiletDisplay.getLedRows(); r++) {
+                lastScreen[c][r] = mToiletDisplay.getScreen()[c][r];
+            }
+        }
+    }
+
+    private boolean hasScreenChanged(boolean[][] screen) {
+        if (lastScreen == null) return true;
+
+        for (int i = 0; i < screen.length; ++i) {
+            if (!Arrays.equals(lastScreen[i], screen[i])){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void stopRender(){

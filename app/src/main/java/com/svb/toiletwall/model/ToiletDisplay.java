@@ -230,4 +230,8 @@ public class ToiletDisplay {
 
         return res.toString();
     }
+
+    public boolean[][] getScreen(){
+        return display.clone();
+    }
 }

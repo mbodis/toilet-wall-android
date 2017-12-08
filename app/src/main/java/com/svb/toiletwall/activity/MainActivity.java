@@ -84,6 +84,10 @@ public class MainActivity extends AppCompatActivity
     public static final int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     public static final int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
 
+    // toilet wall
+    private static final String BT_TOILET_WALL_ADDRESS = "00:21:13:01:F5:79";
+    private static final String BT_TOILET_WALL_NAME = "HC-05";
+
     final BroadcastReceiver blReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -93,6 +97,29 @@ public class MainActivity extends AppCompatActivity
                 // add the name to the list
                 mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 mBTArrayAdapter.notifyDataSetChanged();
+            }
+        }
+    };
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        connectToDevice(BT_TOILET_WALL_ADDRESS, BT_TOILET_WALL_NAME);
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_ON:
+                        break;
+                }
             }
         }
     };
@@ -117,11 +144,13 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+        registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
     }
 
     @Override
     protected void onDestroy() {
         unregisterReceiver(blReceiver);
+        unregisterReceiver(mReceiver);
         if (mConnectedThread != null) {
             mConnectedThread.cancel();
         }
@@ -249,6 +278,8 @@ public class MainActivity extends AppCompatActivity
 
         // set init page
         setFragmentAsMain(PAGE_CONNECTION, null);
+
+        connectToDevice(BT_TOILET_WALL_ADDRESS, BT_TOILET_WALL_NAME);
     }
 
     private void setupView() {
@@ -409,55 +440,64 @@ public class MainActivity extends AppCompatActivity
     private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
 
-            if (!mBTAdapter.isEnabled()) {
-                Toast.makeText(getBaseContext(), "Enable Bluetooth please", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            setTitleStatus("Connecting...");
-            // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
             final String address = info.substring(info.length() - 17);
             final String name = info.substring(0, info.length() - 17);
 
-            // Spawn a new thread to avoid blocking the GUI one
-            new Thread() {
-                public void run() {
-                    boolean fail = false;
-
-                    BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
-
-                    try {
-                        mBTSocket = createBluetoothSocket(device);
-                    } catch (IOException e) {
-                        fail = true;
-                        Toast.makeText(getBaseContext(), "Socket creation failed", Toast.LENGTH_SHORT).show();
-                    }
-                    // Establish the Bluetooth socket connection.
-                    try {
-                        mBTSocket.connect();
-                    } catch (IOException e) {
-                        try {
-                            fail = true;
-                            mBTSocket.close();
-                            mHandler.obtainMessage(CONNECTING_STATUS, -1, -1)
-                                    .sendToTarget();
-                        } catch (IOException e2) {
-                            //insert code to deal with this
-                            Toast.makeText(getBaseContext(), "Socket creation failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    if (fail == false) {
-                        mConnectedThread = new ConnectedThread(mBTSocket, mHandler);
-                        mConnectedThread.start();
-
-                        mHandler.obtainMessage(CONNECTING_STATUS, 1, -1, name)
-                                .sendToTarget();
-                    }
-                }
-            }.start();
+            connectToDevice(address, name);
         }
     };
+
+    private void connectToDevice(final String address, final String name){
+        Log.i(TAG, "connectToDevice: address:" + address );
+        Log.i(TAG, "connectToDevice: name:" + name );
+
+        if (!mBTAdapter.isEnabled()) {
+            Toast.makeText(getBaseContext(), "Enable Bluetooth please", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        setTitleStatus("Connecting...");
+        // Get the device MAC address, which is the last 17 chars in the View
+
+
+        // Spawn a new thread to avoid blocking the GUI one
+        new Thread() {
+            public void run() {
+                boolean fail = false;
+
+                BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
+
+                try {
+                    mBTSocket = createBluetoothSocket(device);
+                } catch (IOException e) {
+                    fail = true;
+                    Toast.makeText(getBaseContext(), "Socket creation failed", Toast.LENGTH_SHORT).show();
+                }
+                // Establish the Bluetooth socket connection.
+                try {
+                    mBTSocket.connect();
+                } catch (IOException e) {
+                    try {
+                        fail = true;
+                        mBTSocket.close();
+                        mHandler.obtainMessage(CONNECTING_STATUS, -1, -1)
+                                .sendToTarget();
+                    } catch (IOException e2) {
+                        //insert code to deal with this
+                        Toast.makeText(getBaseContext(), "Socket creation failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if (fail == false) {
+                    mConnectedThread = new ConnectedThread(mBTSocket, mHandler);
+                    mConnectedThread.start();
+
+                    mHandler.obtainMessage(CONNECTING_STATUS, 1, -1, name)
+                            .sendToTarget();
+                }
+            }
+        }.start();
+    }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         try {

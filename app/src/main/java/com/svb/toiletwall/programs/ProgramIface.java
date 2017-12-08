@@ -1,11 +1,7 @@
 package com.svb.toiletwall.programs;
 
-import android.util.Log;
-
 import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.model.ToiletDisplay;
-
-import java.util.Arrays;
 
 import static java.lang.Thread.sleep;
 
@@ -18,25 +14,19 @@ public abstract class ProgramIface {
     public static final String TAG = ProgramIface.class.getName();
 
     // rendering
-    Thread renderThread;
-    boolean renderThreadAlive = true;
+    private Thread renderThread;
+    private boolean renderThreadAlive = true;
 
     // logic
-    Thread logicThread;
-    boolean logicThreadAlive = true;
-    int logicSleepTime;
+    private Thread logicThread;
+    private boolean logicThreadAlive = true;
+    private int logicSleepTime;
 
-    ToiletDisplay mToiletDisplay;
-    int blockColumns = 0;
-    int blockRows = 0;
-
-    boolean lastScreen[][] = null;
+    protected ToiletDisplay mToiletDisplay;
 
     ConnectedThread mConnectedThread;
 
     ProgramIface(int blockColumns, int blockRows, ConnectedThread mConnectedThread, int logicSleepTime) {
-        this.blockColumns = blockColumns;
-        this.blockRows = blockRows;
         mToiletDisplay = new ToiletDisplay(blockColumns, blockRows);
         this.mConnectedThread = mConnectedThread;
         this.logicSleepTime = logicSleepTime;
@@ -45,19 +35,22 @@ public abstract class ProgramIface {
         startLogic();
     }
 
-    public void startRender() {
+    private void startRender() {
         renderThread = new Thread(new Runnable() {
+            boolean sendFullScreen = false;
+
             @Override
             public void run() {
 
                 while (renderThreadAlive) {
 
-                    if(hasScreenChanged(mToiletDisplay.getScreen())) {
+                    // send 1x full screen
+                    if (!sendFullScreen) {
+                        sendFullScreen = mToiletDisplay.sendScreenViaBt(mConnectedThread);
 
-                        // TODO implement compressed protocol: sends only changed blocks
-
-                        mToiletDisplay.sendScreenViaBt(mConnectedThread);
-                        saveScreen(mToiletDisplay);
+                    // send diff
+                    }else{
+                        mToiletDisplay.sendScreenViaBtPartial(mConnectedThread);
                     }
 
                     try {
@@ -71,26 +64,6 @@ public abstract class ProgramIface {
         renderThread.start();
     }
 
-    private void saveScreen(ToiletDisplay mToiletDisplay) {
-        this.lastScreen = new boolean[mToiletDisplay.getLedColumns()][mToiletDisplay.getLedRows()];
-        for (int c = 0; c < mToiletDisplay.getLedColumns(); c++) {
-            for (int r = 0; r < mToiletDisplay.getLedRows(); r++) {
-                lastScreen[c][r] = mToiletDisplay.getScreen()[c][r];
-            }
-        }
-    }
-
-    private boolean hasScreenChanged(boolean[][] screen) {
-        if (lastScreen == null) return true;
-
-        for (int i = 0; i < screen.length; ++i) {
-            if (!Arrays.equals(lastScreen[i], screen[i])){
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void stopRender(){
         renderThreadAlive = false;
         try {
@@ -102,7 +75,7 @@ public abstract class ProgramIface {
         }
     }
 
-    public void startLogic() {
+    private void startLogic() {
         logicThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -124,7 +97,7 @@ public abstract class ProgramIface {
 
     protected abstract void logicExecute();
 
-    public void stopLogic(){
+    private void stopLogic(){
         logicThreadAlive = false;
         try {
             if (logicThread.getState() == Thread.State.RUNNABLE) {

@@ -19,6 +19,8 @@ public class ConnectedThread extends Thread {
 
     public static final String TAG = ConnectedThread.class.getName();
 
+    private boolean isAlive = true;
+
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
@@ -46,7 +48,7 @@ public class ConnectedThread extends Thread {
         byte[] buffer = new byte[1024];  // buffer store for the stream
         int bytes; // bytes returned from read()
         // Keep listening to the InputStream until an exception occurs
-        while (true) {
+        while (isAlive) {
             try {
                 // Read from the InputStream
                 bytes = mmInStream.available();
@@ -77,6 +79,7 @@ public class ConnectedThread extends Thread {
     /* Call this from the main activity to shutdown the connection */
     public void cancel() {
         try {
+            isAlive = false;
             mmSocket.close();
         } catch (IOException e) {
         }

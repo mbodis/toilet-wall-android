@@ -1,10 +1,11 @@
 package com.svb.toiletwall.model;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.model.db.AnimationFrame;
+
+import java.util.Arrays;
 
 /**
  * Created by mbodis on 8/18/17.
@@ -17,14 +18,14 @@ public class ToiletDisplay {
     public static final byte BLOCK_LED_COLS = 4;
     public static final byte BLOCK_LED_ROWS = 3;
 
-    byte DELIMETER_1 = (byte) 0;
-    byte DELIMETER_2 = (byte) 255;
-    byte DELIMETER_3 = (byte) 255;
+    private static byte DELIMETER_1 = (byte) 0;
+    private static byte DELIMETER_2 = (byte) 255;
+    private static byte DELIMETER_3 = (byte) 255;
 
     private boolean[][] display;
     private byte ledRows, ledColumns;
     private int blockRows, blockColumns;
-    //private boolean sendOnce = false;
+    private boolean lastScreen[][] = null;
 
     public ToiletDisplay(int blockColumns, int blockRows) {
         this.blockColumns = blockColumns;
@@ -79,7 +80,9 @@ public class ToiletDisplay {
     }
 
     public void setScreenPx(int col, int row, boolean value) {
-        display[col][row] = value;
+        if (col<ledColumns && row <ledRows) {
+            display[col][row] = value;
+        }
     }
 
     public void toggleScreenPx(int col, int row) {
@@ -87,14 +90,11 @@ public class ToiletDisplay {
     }
 
     public int getDisplayValue(int col, int row) {
-        return (display[col][row] == true) ? 1 : 0;
+        return (display[col][row]) ? 1 : 0;
     }
 
-    synchronized public void sendScreenViaBt(ConnectedThread mConnectedThread) {
-        if (mConnectedThread == null) return;
-
-        //if (sendOnce) return;
-
+    synchronized public boolean sendScreenViaBt(ConnectedThread mConnectedThread) {
+        if (mConnectedThread == null) return false;
 
         mConnectedThread.writeByte(DELIMETER_1);
         mConnectedThread.writeByte(DELIMETER_2);
@@ -106,55 +106,93 @@ public class ToiletDisplay {
         // loop all blocks
         for (int c = 0; c < this.blockColumns; c++) {
             for (int r = 0; r < this.blockRows; r++) {
+                sendBlockViaBT(mConnectedThread, c, r);
+            }
+        }
 
-                int cc = c * BLOCK_LED_COLS;
-                int rr = r * BLOCK_LED_ROWS;
+        return true;
+    }
+
+    synchronized public int sendScreenViaBtPartial(ConnectedThread mConnectedThread){
+        if (mConnectedThread == null) return -1;
+
+        int blockChanged = 0;
+
+        // loop all blocks
+        for (int c = 0; c < this.blockColumns; c++) {
+            for (int r = 0; r < this.blockRows; r++) {
+                if (hasBlockChanged(c, r)){
+                    sendBlockViaBT(mConnectedThread, c, r);
+                    blockChanged++;
+                }
+            }
+        }
+
+        if(blockChanged > 0){
+            //Log.i(TAG, "blockChanged: " + blockChanged);
+            saveLastScreen();
+        }
+        return blockChanged;
+    }
+
+    synchronized private void sendBlockViaBT(ConnectedThread mConnectedThread, int c, int r){
+        int cc = c * BLOCK_LED_COLS;
+        int rr = r * BLOCK_LED_ROWS;
 
                 /*
                  * first byte for each block
                  * bit 7,6,5,4  == column
                  * bit 3,2,1,0  == row
                  */
-                int firstByte = Integer.parseInt(getBinaryValue(c + 1, 4) + getBinaryValue(r + 1, 4), 2);
-                //Log.d(TAG, "first byte: " + (byte) firstByte);
-                mConnectedThread.writeByte((byte) firstByte);
+        int firstByte = Integer.parseInt(getBinaryValue(c + 1, 4) + getBinaryValue(r + 1, 4), 2);
+        //Log.d(TAG, "first byte: " + (byte) firstByte);
+        mConnectedThread.writeByte((byte) firstByte);
 
                 /*
                  * second byte for each block
                  * bit 7,6,5,4  == 0000
                  * bit 3,2,1,0  == first row of LED block
                  */
-                int secondByte1 = 8 * getDisplayValue(cc, rr)
-                        + 4 * getDisplayValue(cc + 1, rr)
-                        + 2 * getDisplayValue(cc + 2, rr)
-                        + 1 * getDisplayValue(cc + 3, rr);
-                //Log.d(TAG, "second byte: " + (byte) secondByte1);
-                mConnectedThread.writeByte((byte) secondByte1);
+        int secondByte1 = 8 * getDisplayValue(cc, rr)
+                + 4 * getDisplayValue(cc + 1, rr)
+                + 2 * getDisplayValue(cc + 2, rr)
+                + 1 * getDisplayValue(cc + 3, rr);
+        //Log.d(TAG, "second byte: " + (byte) secondByte1);
+        mConnectedThread.writeByte((byte) secondByte1);
 
                 /*
                  * third byte for each block
                  * bit 7,6,5,4  == second row of LED block
                  * bit 3,2,1,0  == third row of LED block
                  */
-                int thirdByte1 = 128 * getDisplayValue(cc, rr + 1)
-                        + 64 * getDisplayValue(cc + 1, rr + 1)
-                        + 32 * getDisplayValue(cc + 2, rr + 1)
-                        + 16 * getDisplayValue(cc + 3, rr + 1);
-                int thirdByte2 = 8 * getDisplayValue(cc, rr + 2)
-                        + 4 * getDisplayValue(cc + 1, rr + 2)
-                        + 2 * getDisplayValue(cc + 2, rr + 2)
-                        + 1 * getDisplayValue(cc + 3, rr + 2);
-                //Log.d(TAG, "third byte1: " + (byte) (thirdByte1));
-                //Log.d(TAG, "third byte2: " + (byte) (thirdByte2));
-                mConnectedThread.writeByte((byte) (thirdByte1 + thirdByte2));
+        int thirdByte1 = 128 * getDisplayValue(cc, rr + 1)
+                + 64 * getDisplayValue(cc + 1, rr + 1)
+                + 32 * getDisplayValue(cc + 2, rr + 1)
+                + 16 * getDisplayValue(cc + 3, rr + 1);
+        int thirdByte2 = 8 * getDisplayValue(cc, rr + 2)
+                + 4 * getDisplayValue(cc + 1, rr + 2)
+                + 2 * getDisplayValue(cc + 2, rr + 2)
+                + 1 * getDisplayValue(cc + 3, rr + 2);
+        //Log.d(TAG, "third byte1: " + (byte) (thirdByte1));
+        //Log.d(TAG, "third byte2: " + (byte) (thirdByte2));
+        mConnectedThread.writeByte((byte) (thirdByte1 + thirdByte2));
+    }
 
+    private boolean hasBlockChanged(int c, int r){
+        if (lastScreen == null) return true;
+
+        for (int bc = (c * BLOCK_LED_COLS); bc < ((c+1) * BLOCK_LED_COLS); bc++){
+            for (int br = (r * BLOCK_LED_ROWS); br < ((r+1) * BLOCK_LED_ROWS); br++){
+                if (display[bc][br] != lastScreen[bc][br]){
+                    return true;
+                }
             }
         }
 
-        //sendOnce = true;
+        return false;
     }
 
-    public static String getBinaryValue(int integerValue, int binLength) {
+    private static String getBinaryValue(int integerValue, int binLength) {
         String binaryStr = "00000000" + Integer.toBinaryString(integerValue);
         int length = binaryStr.length();
         return (binaryStr.substring(length - 4, length));
@@ -204,13 +242,17 @@ public class ToiletDisplay {
             for (int col = 0; col < ledColumns; col++) {
                 int from = row * ledColumns + col;
                 int to = from + 1;
-                setScreenPx(col, row, Integer.parseInt(animationFrame.getContent().substring(from, to)) == 1);
+
+                // fallback for smaller animations
+                if (animationFrame.getContent().length() > from) {
+                    setScreenPx(col, row, Integer.parseInt(animationFrame.getContent().substring(from, to)) == 1);
+                }
             }
         }
     }
 
     public String getFrameFromScreen() {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         for (int row = 0; row < ledRows; row++) {
             for (int col = 0; col < ledColumns; col++) {
                 res.append(String.valueOf(getDisplayValue(col, row)));
@@ -221,7 +263,7 @@ public class ToiletDisplay {
     }
 
     public static String getEmptyScreen(int blockCols, int blockRows) {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         for (int row = 0; row < blockRows * BLOCK_LED_ROWS; row++) {
             for (int col = 0; col < blockCols * BLOCK_LED_COLS; col++) {
                 res.append(String.valueOf(0));
@@ -233,5 +275,25 @@ public class ToiletDisplay {
 
     public boolean[][] getScreen(){
         return display.clone();
+    }
+
+    private void saveLastScreen() {
+        this.lastScreen = new boolean[getLedColumns()][getLedRows()];
+        for (int c = 0; c < getLedColumns(); c++) {
+            for (int r = 0; r < getLedRows(); r++) {
+                lastScreen[c][r] = getScreen()[c][r];
+            }
+        }
+    }
+
+    private boolean hasScreenChanged(boolean[][] screen) {
+        if (lastScreen == null) return true;
+
+        for (int i = 0; i < screen.length; ++i) {
+            if (!Arrays.equals(lastScreen[i], screen[i])){
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -38,6 +38,7 @@ import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
 import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.fragment.ProgramDrawFragment;
+import com.svb.toiletwall.fragment.ProgramPlaytableFragment;
 import com.svb.toiletwall.fragment.ProgramRandomFragment;
 import com.svb.toiletwall.fragment.ProgramTestFragment;
 import com.svb.toiletwall.fragment.ProgramTextFragment;
@@ -60,10 +61,11 @@ public class MainActivity extends AppCompatActivity
     public static final int PAGE_TEST = 10;
     public static final int PAGE_RANDOM = 20;
     public static final int PAGE_DRAW = 30;
-    public static final int PAGE_ANIMATION = 40;
-    public static final int PAGE_ANIMATION_DETAIL = 41;
-    public static final int PAGE_TEXT = 50;
-    public static final int PAGE_SETTINGS = 60;
+    public static final int PAGE_PLAYTABLE = 40;
+    public static final int PAGE_ANIMATION = 50;
+    public static final int PAGE_ANIMATION_DETAIL = 51;
+    public static final int PAGE_TEXT = 60;
+    public static final int PAGE_SETTINGS = 70;
 
     // GUI Components
     private View connectingLl, fragmentContainer;
@@ -135,9 +137,9 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
         setupView();
+        setTitleStatus("Device not connected");
         setupViewDrawer();
         setupContent();
-        setTitleStatus("Device not connected");
     }
 
     @Override
@@ -191,6 +193,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_draw) {
             setFragmentAsMain(PAGE_DRAW, null);
+
+        } else if (id == R.id.nav_playtable) {
+            setFragmentAsMain(PAGE_PLAYTABLE, null);
 
         } else if (id == R.id.nav_animation) {
             setFragmentAsMain(PAGE_ANIMATION, null);
@@ -377,6 +382,12 @@ public class MainActivity extends AppCompatActivity
                 toggleViews(false, true);
                 frTransaction.replace(R.id.container,
                         ProgramDrawFragment.newInstance(args), ProgramDrawFragment.TAG);
+                break;
+
+            case PAGE_PLAYTABLE:
+                toggleViews(false, true);
+                frTransaction.replace(R.id.container,
+                        ProgramPlaytableFragment.newInstance(args), ProgramPlaytableFragment.TAG);
                 break;
 
             case PAGE_ANIMATION:

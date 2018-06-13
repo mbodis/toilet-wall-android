@@ -16,7 +16,7 @@ import android.widget.EditText;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.programs.TextProgram;
-import com.svb.toiletwall.support.MyShPrefs;
+import com.svb.toiletwall.utils.MyShPrefs;
 import com.svb.toiletwall.view.ToiletView;
 
 import static java.lang.Thread.sleep;

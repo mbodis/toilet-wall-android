@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.activity.MainActivity;
@@ -20,8 +19,6 @@ import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.model.ToiletDisplay;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.programs.AnimationProgram;
-import com.svb.toiletwall.support.FontManager;
-import com.svb.toiletwall.support.MyShPrefs;
 
 import java.util.List;
 

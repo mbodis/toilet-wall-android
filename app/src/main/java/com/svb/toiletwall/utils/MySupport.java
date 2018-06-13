@@ -1,4 +1,4 @@
-package com.svb.toiletwall.support;
+package com.svb.toiletwall.utils;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;

@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,7 @@ import com.svb.toiletwall.model.ToiletDisplay;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.AnimationFrame;
 import com.svb.toiletwall.model.db.DaoSession;
-import com.svb.toiletwall.support.MyShPrefs;
+import com.svb.toiletwall.utils.MyShPrefs;
 
 import org.greenrobot.greendao.database.Database;
 

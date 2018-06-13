@@ -7,8 +7,7 @@ import android.view.ViewGroup;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.programs.DrawProgram;
-import com.svb.toiletwall.support.MyShPrefs;
-import com.svb.toiletwall.usb.MyUsbDevice;
+import com.svb.toiletwall.utils.MyShPrefs;
 import com.svb.toiletwall.view.ToiletView;
 
 /**

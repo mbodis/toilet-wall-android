@@ -1,4 +1,4 @@
-package com.svb.toiletwall.support;
+package com.svb.toiletwall.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

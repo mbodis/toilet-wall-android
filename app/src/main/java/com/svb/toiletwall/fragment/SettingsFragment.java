@@ -10,7 +10,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
 import com.svb.toiletwall.R;
-import com.svb.toiletwall.support.MyShPrefs;
+import com.svb.toiletwall.utils.MyShPrefs;
 
 import static android.content.Context.MODE_MULTI_PROCESS;
 

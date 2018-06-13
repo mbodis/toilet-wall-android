@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,18 +13,21 @@
         android:padding="5dp"
         android:text="@string/program_draw_title"
         android:textSize="15sp" />
-    <Button
-        android:id="@+id/usb"
-        android:text="USB"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
+    <com.svb.toiletwall.view.WaveformView
+        android:id="@+id/waveformView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/title"
+        android:background="#000000"
+        app:mode="RECORDING" />
 
     <com.svb.toiletwall.view.ToiletView
         android:id="@+id/drawView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomPanel"
-        android:layout_below="@id/title" />
+        android:layout_below="@id/waveformView" />
 
     <LinearLayout
         android:id="@id/bottomPanel"
@@ -42,6 +47,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="{faw_eraser}" />
+
+            <Button
+                android:id="@+id/start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="{faw_start} / {faw_stop}" />
 
         </LinearLayout>
     </LinearLayout>

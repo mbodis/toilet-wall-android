@@ -1,6 +1,5 @@
 package com.svb.toiletwall.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.programs.TestingProgram;
-import com.svb.toiletwall.support.MyShPrefs;
+import com.svb.toiletwall.utils.MyShPrefs;
 
 /**
  * Created by mbodis on 9/24/17.

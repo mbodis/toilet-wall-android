@@ -38,8 +38,8 @@ import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
 import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.fragment.ProgramDrawFragment;
-import com.svb.toiletwall.fragment.ProgramPlaytableFragment;
 import com.svb.toiletwall.fragment.ProgramRandomFragment;
+import com.svb.toiletwall.fragment.ProgramSoundFragment;
 import com.svb.toiletwall.fragment.ProgramTestFragment;
 import com.svb.toiletwall.fragment.ProgramTextFragment;
 import com.svb.toiletwall.fragment.SettingsFragment;
@@ -50,7 +50,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.svb.toiletwall.support.MySupport.REQUEST_ENABLE_BT;
+import static com.svb.toiletwall.utils.MySupport.REQUEST_ENABLE_BT;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     public static final int PAGE_TEST = 10;
     public static final int PAGE_RANDOM = 20;
     public static final int PAGE_DRAW = 30;
-    public static final int PAGE_PLAYTABLE = 40;
+    public static final int PAGE_SOUND = 40;
     public static final int PAGE_ANIMATION = 50;
     public static final int PAGE_ANIMATION_DETAIL = 51;
     public static final int PAGE_TEXT = 60;
@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_draw) {
             setFragmentAsMain(PAGE_DRAW, null);
 
-        } else if (id == R.id.nav_playtable) {
-            setFragmentAsMain(PAGE_PLAYTABLE, null);
+        } else if (id == R.id.nav_sound) {
+            setFragmentAsMain(PAGE_SOUND, null);
 
         } else if (id == R.id.nav_animation) {
             setFragmentAsMain(PAGE_ANIMATION, null);
@@ -384,10 +384,10 @@ public class MainActivity extends AppCompatActivity
                         ProgramDrawFragment.newInstance(args), ProgramDrawFragment.TAG);
                 break;
 
-            case PAGE_PLAYTABLE:
+            case PAGE_SOUND:
                 toggleViews(false, true);
                 frTransaction.replace(R.id.container,
-                        ProgramPlaytableFragment.newInstance(args), ProgramPlaytableFragment.TAG);
+                        ProgramSoundFragment.newInstance(args), ProgramSoundFragment.TAG);
                 break;
 
             case PAGE_ANIMATION:

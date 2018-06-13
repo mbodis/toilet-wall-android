@@ -32,7 +32,7 @@ import com.svb.toiletwall.model.db.AnimationDao;
 import com.svb.toiletwall.model.db.AnimationFrame;
 import com.svb.toiletwall.model.db.DaoSession;
 import com.svb.toiletwall.programs.AnimationProgram;
-import com.svb.toiletwall.support.MyShPrefs;
+import com.svb.toiletwall.utils.MyShPrefs;
 import com.svb.toiletwall.view.ToiletView;
 
 import org.greenrobot.greendao.database.Database;

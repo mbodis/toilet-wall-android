@@ -22,6 +22,7 @@ import com.svb.toiletwall.view.WaveformView;
 /**
  * Created by mbodis on 1/14/18.
  *
+ * some docs: https://www.newventuresoftware.com/blog/record-play-and-visualize-raw-audio-data-in-android
  * used lib: https://github.com/newventuresoftware/WaveformControl/
  */
 

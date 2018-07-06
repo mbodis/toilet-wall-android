@@ -3,6 +3,7 @@ package com.svb.toiletwall.model;
 import android.util.Log;
 
 import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.model.db.AnimationFrame;
 
 import java.util.Arrays;
@@ -93,28 +94,28 @@ public class ToiletDisplay {
         return (display[col][row]) ? 1 : 0;
     }
 
-    synchronized public boolean sendScreenViaBt(ConnectedThread mConnectedThread) {
-        if (mConnectedThread == null) return false;
+    synchronized public boolean sendScreenViaBt(ConnectionThreadPool mConnectionThreadPool) {
+        if (mConnectionThreadPool == null) return false;
 
-        mConnectedThread.writeByte(DELIMETER_1);
-        mConnectedThread.writeByte(DELIMETER_2);
-        mConnectedThread.writeByte(DELIMETER_3);
+        mConnectionThreadPool.writeByte(DELIMETER_1);
+        mConnectionThreadPool.writeByte(DELIMETER_2);
+        mConnectionThreadPool.writeByte(DELIMETER_3);
 
-        mConnectedThread.writeByte((byte) (this.ledRows / BLOCK_LED_ROWS));
-        mConnectedThread.writeByte((byte) (this.ledColumns / BLOCK_LED_COLS));
+        mConnectionThreadPool.writeByte((byte) (this.ledRows / BLOCK_LED_ROWS));
+        mConnectionThreadPool.writeByte((byte) (this.ledColumns / BLOCK_LED_COLS));
 
         // loop all blocks
         for (int c = 0; c < this.blockColumns; c++) {
             for (int r = 0; r < this.blockRows; r++) {
-                sendBlockViaBT(mConnectedThread, c, r);
+                sendBlockViaBT(mConnectionThreadPool, c, r);
             }
         }
 
         return true;
     }
 
-    synchronized public int sendScreenViaBtPartial(ConnectedThread mConnectedThread){
-        if (mConnectedThread == null) return -1;
+    synchronized public int sendScreenViaBtPartial(ConnectionThreadPool mConnectionThreadPool){
+        if (mConnectionThreadPool == null) return -1;
 
         int blockChanged = 0;
 
@@ -122,7 +123,7 @@ public class ToiletDisplay {
         for (int c = 0; c < this.blockColumns; c++) {
             for (int r = 0; r < this.blockRows; r++) {
                 if (hasBlockChanged(c, r)){
-                    sendBlockViaBT(mConnectedThread, c, r);
+                    sendBlockViaBT(mConnectionThreadPool, c, r);
                     blockChanged++;
                 }
             }
@@ -135,7 +136,7 @@ public class ToiletDisplay {
         return blockChanged;
     }
 
-    synchronized private void sendBlockViaBT(ConnectedThread mConnectedThread, int c, int r){
+    synchronized private void sendBlockViaBT(ConnectionThreadPool mConnectionThreadPool, int c, int r){
         int cc = c * BLOCK_LED_COLS;
         int rr = r * BLOCK_LED_ROWS;
 
@@ -146,7 +147,7 @@ public class ToiletDisplay {
                  */
         int firstByte = Integer.parseInt(getBinaryValue(c + 1, 4) + getBinaryValue(r + 1, 4), 2);
         //Log.d(TAG, "first byte: " + (byte) firstByte);
-        mConnectedThread.writeByte((byte) firstByte);
+        mConnectionThreadPool.writeByte((byte) firstByte);
 
                 /*
                  * second byte for each block
@@ -158,7 +159,7 @@ public class ToiletDisplay {
                 + 2 * getDisplayValue(cc + 2, rr)
                 + 1 * getDisplayValue(cc + 3, rr);
         //Log.d(TAG, "second byte: " + (byte) secondByte1);
-        mConnectedThread.writeByte((byte) secondByte1);
+        mConnectionThreadPool.writeByte((byte) secondByte1);
 
                 /*
                  * third byte for each block
@@ -175,7 +176,7 @@ public class ToiletDisplay {
                 + 1 * getDisplayValue(cc + 3, rr + 2);
         //Log.d(TAG, "third byte1: " + (byte) (thirdByte1));
         //Log.d(TAG, "third byte2: " + (byte) (thirdByte2));
-        mConnectedThread.writeByte((byte) (thirdByte1 + thirdByte2));
+        mConnectionThreadPool.writeByte((byte) (thirdByte1 + thirdByte2));
     }
 
     private boolean hasBlockChanged(int c, int r){

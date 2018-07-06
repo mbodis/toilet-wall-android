@@ -1,6 +1,7 @@
 package com.svb.toiletwall.programs;
 
 import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 
 /**
  * Created by mbodis on 9/9/17.
@@ -8,8 +9,8 @@ import com.svb.toiletwall.bluetooth.ConnectedThread;
 
 public class DrawProgram extends ProgramIface {
 
-    public DrawProgram(int cols, int rows, ConnectedThread mConnectedThread) {
-        super(cols, rows, mConnectedThread, 500);
+    public DrawProgram(int cols, int rows, ConnectionThreadPool mConnectionThreadPool) {
+        super(cols, rows, mConnectionThreadPool, 500);
     }
 
     @Override

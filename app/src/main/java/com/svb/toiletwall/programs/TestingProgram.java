@@ -1,6 +1,7 @@
 package com.svb.toiletwall.programs;
 
 import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.model.ToiletDisplay;
 
 /**
@@ -11,8 +12,8 @@ public class TestingProgram extends ProgramIface{
 
     int lightRow = 1;
 
-    public TestingProgram(int cols, int rows, ConnectedThread mConnectedThread) {
-        super(cols, rows, mConnectedThread, 500);
+    public TestingProgram(int cols, int rows, ConnectionThreadPool mConnectionThreadPool) {
+        super(cols, rows, mConnectionThreadPool, 500);
     }
 
     @Override

@@ -35,6 +35,7 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
 import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.fragment.ProgramDrawFragment;
@@ -47,6 +48,7 @@ import com.svb.toiletwall.fragment.SettingsFragment;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     // GUI Components
     private View connectingLl, fragmentContainer;
     private Button mListPairedDevicesBtn, mDiscoverBtn;
+    private Button bt1, bt2, bt3, bt4;
     private BluetoothAdapter mBTAdapter;
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity
 
     // bluetooth
     private Handler mHandler; // Our main handler that will receive callback notifications
-    private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
+    private ConnectionThreadPool mConnectionThreadPool; // bluetooth background worker thread to send and receive data
     private BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
 
     // bluetooth static
@@ -87,8 +90,22 @@ public class MainActivity extends AppCompatActivity
     public static final int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
 
     // toilet wall
-    private static final String BT_TOILET_WALL_ADDRESS = "00:21:13:01:F5:79";
-    private static final String BT_TOILET_WALL_NAME = "HC-05";
+    private static final String BT_TOILET_WALL_ADDRESS_1 = "98:D3:21:F4:7D:D3";
+    private static final String BT_TOILET_WALL_NAME_1 = "HC-06";
+
+    private static final String BT_TOILET_WALL_ADDRESS_2 = "98:D3:21:F4:7C:A4";
+    private static final String BT_TOILET_WALL_NAME_2 = "HC-06";
+
+    private static final String BT_TOILET_WALL_ADDRESS_3 = "98:D3:61:F9:3A:C4";
+    private static final String BT_TOILET_WALL_NAME_3 = "HC-06";
+
+    private static final String BT_TOILET_WALL_ADDRESS_4 = "00:21:13:01:F5:79";
+    private static final String BT_TOILET_WALL_NAME_4 = "HC-05";
+
+    private static final String[] BT_TW_ADDR = {BT_TOILET_WALL_ADDRESS_1, BT_TOILET_WALL_ADDRESS_2,
+            BT_TOILET_WALL_ADDRESS_3, BT_TOILET_WALL_ADDRESS_4};
+    private static final String[] BT_TW_NAME = {BT_TOILET_WALL_NAME_1, BT_TOILET_WALL_NAME_2,
+            BT_TOILET_WALL_NAME_3, BT_TOILET_WALL_NAME_4};
 
     final BroadcastReceiver blReceiver = new BroadcastReceiver() {
         @Override
@@ -99,29 +116,6 @@ public class MainActivity extends AppCompatActivity
                 // add the name to the list
                 mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 mBTArrayAdapter.notifyDataSetChanged();
-            }
-        }
-    };
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.ERROR);
-                switch (state) {
-                    case BluetoothAdapter.STATE_OFF:
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-                        connectToDevice(BT_TOILET_WALL_ADDRESS, BT_TOILET_WALL_NAME);
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_ON:
-                        break;
-                }
             }
         }
     };
@@ -146,21 +140,20 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-        registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
     }
 
     @Override
     protected void onDestroy() {
         unregisterReceiver(blReceiver);
-        unregisterReceiver(mReceiver);
-        if (mConnectedThread != null) {
-            mConnectedThread.cancel();
+
+        if (mConnectionThreadPool != null) {
+            mConnectionThreadPool.cancel();
         }
         super.onDestroy();
     }
 
-    public ConnectedThread getConnectedThread() {
-        return mConnectedThread;
+    public ConnectionThreadPool getConnectedThreadPool() {
+        return mConnectionThreadPool;
     }
 
     @Override
@@ -229,6 +222,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setTitleStatus(String msg) {
         getSupportActionBar().setTitle(msg);
+        Log.d(TAG, "BT message: " + msg);
     }
 
     @Override
@@ -241,6 +235,19 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.discover:
                 discover(view);
+                break;
+
+            case R.id.connectBt1:
+                connectToDevice(BT_TW_ADDR[0], BT_TW_NAME[0], BTMODULEUUID, 0);
+                break;
+            case R.id.connectBt2:
+                connectToDevice(BT_TW_ADDR[1], BT_TW_NAME[1], BTMODULEUUID, 1);
+                break;
+            case R.id.connectBt3:
+                connectToDevice(BT_TW_ADDR[2], BT_TW_NAME[2], BTMODULEUUID, 2);
+                break;
+            case R.id.connectBt4:
+                connectToDevice(BT_TW_ADDR[3], BT_TW_NAME[3], BTMODULEUUID, 3);
                 break;
         }
     }
@@ -283,8 +290,6 @@ public class MainActivity extends AppCompatActivity
 
         // set init page
         setFragmentAsMain(PAGE_CONNECTION, null);
-
-        connectToDevice(BT_TOILET_WALL_ADDRESS, BT_TOILET_WALL_NAME);
     }
 
     private void setupView() {
@@ -301,6 +306,15 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // connecting
+        bt1 = (Button) findViewById(R.id.connectBt1);
+        findViewById(R.id.connectBt1).setOnClickListener(this);
+        bt2 = (Button) findViewById(R.id.connectBt2);
+        findViewById(R.id.connectBt2).setOnClickListener(this);
+        bt3 = (Button) findViewById(R.id.connectBt3);
+        findViewById(R.id.connectBt3).setOnClickListener(this);
+        bt4 = (Button) findViewById(R.id.connectBt4);
+        findViewById(R.id.connectBt4).setOnClickListener(this);
+
         connectingLl = findViewById(R.id.connecting_ll);
         mDiscoverBtn = (Button) findViewById(R.id.discover);
         mDiscoverBtn.setOnClickListener(this);
@@ -309,7 +323,16 @@ public class MainActivity extends AppCompatActivity
         mBTArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         mDevicesListView = (ListView) findViewById(R.id.devicesListView);
         mDevicesListView.setAdapter(mBTArrayAdapter); // assign model to view
-        mDevicesListView.setOnItemClickListener(mDeviceClickListener);
+        mDevicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String info = ((TextView) view).getText().toString();
+                final String address = info.substring(info.length() - 17);
+                final String name = info.substring(0, info.length() - 17);
+
+                connectToDevice(address, name, BTMODULEUUID, -1);
+            }
+        });
 
         fragmentContainer = findViewById(R.id.container);
 
@@ -448,20 +471,9 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), "Enable Bluetooth please", Toast.LENGTH_SHORT).show();
     }
 
-    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-
-            String info = ((TextView) v).getText().toString();
-            final String address = info.substring(info.length() - 17);
-            final String name = info.substring(0, info.length() - 17);
-
-            connectToDevice(address, name);
-        }
-    };
-
-    private void connectToDevice(final String address, final String name){
-        Log.i(TAG, "connectToDevice: address:" + address );
-        Log.i(TAG, "connectToDevice: name:" + name );
+    private void connectToDevice(final String address, final String name, final UUID btModuleUuid, final int idx) {
+        Log.i(TAG, "connectToDevice: address:" + address);
+        Log.i(TAG, "connectToDevice: name:" + name);
 
         if (!mBTAdapter.isEnabled()) {
             Toast.makeText(getBaseContext(), "Enable Bluetooth please", Toast.LENGTH_SHORT).show();
@@ -475,14 +487,15 @@ public class MainActivity extends AppCompatActivity
         // Spawn a new thread to avoid blocking the GUI one
         new Thread() {
             public void run() {
-                boolean fail = false;
+                boolean success = true;
 
                 BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
+                Log.d(TAG, "UUID:" + device.getUuids()[0].getUuid());
 
                 try {
-                    mBTSocket = createBluetoothSocket(device);
+                    mBTSocket = createBluetoothSocket(device, btModuleUuid);
                 } catch (IOException e) {
-                    fail = true;
+                    success = false;
                     Toast.makeText(getBaseContext(), "Socket creation failed", Toast.LENGTH_SHORT).show();
                 }
                 // Establish the Bluetooth socket connection.
@@ -490,7 +503,7 @@ public class MainActivity extends AppCompatActivity
                     mBTSocket.connect();
                 } catch (IOException e) {
                     try {
-                        fail = true;
+                        success = false;
                         mBTSocket.close();
                         mHandler.obtainMessage(CONNECTING_STATUS, -1, -1)
                                 .sendToTarget();
@@ -499,9 +512,37 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(getBaseContext(), "Socket creation failed", Toast.LENGTH_SHORT).show();
                     }
                 }
-                if (fail == false) {
-                    mConnectedThread = new ConnectedThread(mBTSocket, mHandler);
+
+                if (success) {
+                    ConnectedThread mConnectedThread = new ConnectedThread(mBTSocket, mHandler);
                     mConnectedThread.start();
+                    if (mConnectionThreadPool == null) {
+                        mConnectionThreadPool = new ConnectionThreadPool();
+                    }
+                    mConnectionThreadPool.addConnectionThread(mConnectedThread);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (idx) {
+                                case 0:
+                                    bt1.setEnabled(false);
+                                    break;
+
+                                case 1:
+                                    bt2.setEnabled(false);
+                                    break;
+
+                                case 2:
+                                    bt3.setEnabled(false);
+                                    break;
+
+                                case 3:
+                                    bt4.setEnabled(false);
+                                    break;
+                            }
+                        }
+                    });
 
                     mHandler.obtainMessage(CONNECTING_STATUS, 1, -1, name)
                             .sendToTarget();
@@ -510,14 +551,14 @@ public class MainActivity extends AppCompatActivity
         }.start();
     }
 
-    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device, UUID btModuleUuid) throws IOException {
         try {
             final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", UUID.class);
-            return (BluetoothSocket) m.invoke(device, BTMODULEUUID);
+            return (BluetoothSocket) m.invoke(device, btModuleUuid);
         } catch (Exception e) {
             Log.e(TAG, "Could not create Insecure RFComm Connection", e);
         }
-        return device.createRfcommSocketToServiceRecord(BTMODULEUUID);
+        return device.createRfcommSocketToServiceRecord(btModuleUuid);
     }
 
 }

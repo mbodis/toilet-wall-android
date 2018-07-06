@@ -42,6 +42,6 @@ public class ProgramRandomFragment extends ProgramFramgment {
         program = new RandomProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
-                getConnectedThread());
+                getConnectionThreadPool());
     }
 }

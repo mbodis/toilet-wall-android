@@ -55,7 +55,7 @@ public class ProgramDrawFragment extends ProgramFramgment implements View.OnClic
         program = new DrawProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
-                getConnectedThread());
+                getConnectionThreadPool());
         drawView.setToiletDisplay(program.getToiletDisplay());
         drawView.startDrawImage();
     }

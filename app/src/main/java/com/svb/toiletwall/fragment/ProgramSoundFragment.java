@@ -134,7 +134,7 @@ public class ProgramSoundFragment extends ProgramFramgment implements View.OnCli
         program = new DrawProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
-                getConnectedThread());
+                getConnectionThreadPool());
         drawView.setToiletDisplay(program.getToiletDisplay());
         drawView.startDrawImage();
     }

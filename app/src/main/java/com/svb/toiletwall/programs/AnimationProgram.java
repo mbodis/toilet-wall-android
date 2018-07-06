@@ -1,6 +1,7 @@
 package com.svb.toiletwall.programs;
 
 import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.AnimationFrame;
 
@@ -19,12 +20,12 @@ public class AnimationProgram extends ProgramIface {
     private int currentFrame = 0;
     private boolean isPlaying = false;
 
-    public AnimationProgram(int cols, int rows, ConnectedThread mConnectedThread) {
-        super(cols, rows, mConnectedThread, 0);
+    public AnimationProgram(int cols, int rows, ConnectionThreadPool mConnectionThreadPool) {
+        super(cols, rows, mConnectionThreadPool, 0);
     }
 
-    public AnimationProgram(ConnectedThread mConnectedThread, Animation animation) {
-        super(animation.getCols(), animation.getRows(), mConnectedThread, 0);
+    public AnimationProgram(ConnectionThreadPool mConnectionThreadPool, Animation animation) {
+        super(animation.getCols(), animation.getRows(), mConnectionThreadPool, 0);
         frames = animation.getFrames();
     }
 

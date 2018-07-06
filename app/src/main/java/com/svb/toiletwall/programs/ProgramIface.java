@@ -1,6 +1,7 @@
 package com.svb.toiletwall.programs;
 
 import com.svb.toiletwall.bluetooth.ConnectedThread;
+import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.model.ToiletDisplay;
 
 import static java.lang.Thread.sleep;
@@ -24,11 +25,11 @@ public abstract class ProgramIface {
 
     protected ToiletDisplay mToiletDisplay;
 
-    ConnectedThread mConnectedThread;
+    ConnectionThreadPool mConnectionThreadPool;
 
-    ProgramIface(int blockColumns, int blockRows, ConnectedThread mConnectedThread, int logicSleepTime) {
+    ProgramIface(int blockColumns, int blockRows, ConnectionThreadPool mConnectionThreadPool, int logicSleepTime) {
         mToiletDisplay = new ToiletDisplay(blockColumns, blockRows);
-        this.mConnectedThread = mConnectedThread;
+        this.mConnectionThreadPool = mConnectionThreadPool;
         this.logicSleepTime = logicSleepTime;
 
         startRender();
@@ -46,11 +47,11 @@ public abstract class ProgramIface {
 
                     // send 1x full screen
                     if (!sendFullScreen) {
-                        sendFullScreen = mToiletDisplay.sendScreenViaBt(mConnectedThread);
+                        sendFullScreen = mToiletDisplay.sendScreenViaBt(mConnectionThreadPool);
 
                     // send diff
                     }else{
-                        mToiletDisplay.sendScreenViaBtPartial(mConnectedThread);
+                        mToiletDisplay.sendScreenViaBtPartial(mConnectionThreadPool);
                     }
 
                     try {

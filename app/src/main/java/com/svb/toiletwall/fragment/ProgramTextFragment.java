@@ -202,7 +202,7 @@ public class ProgramTextFragment extends ProgramFramgment{
         program = new TextProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
-                getConnectedThread()) {
+                getConnectionThreadPool()) {
             @Override
             protected synchronized void logicExecute() {
                 super.logicExecute();

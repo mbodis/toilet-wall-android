@@ -335,7 +335,7 @@ public class ProgramAnimationDetailFragment extends ProgramFramgment implements 
         program = new AnimationProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
-                getConnectedThread());
+                getConnectionThreadPool());
         drawView.setToiletDisplay(program.getToiletDisplay());
         drawView.startDrawImage();
     }

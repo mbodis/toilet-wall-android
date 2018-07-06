@@ -88,7 +88,7 @@ public class ProgramAnimationFragment extends ProgramListFragment implements Vie
             ((AnimationProgram) program).stopAnimation();
         }
         stopProgram();
-        program = new AnimationProgram(getConnectedThread(),
+        program = new AnimationProgram(getConnectionThreadPool(),
                 mAdapter.list.get(listIdx));
         ((AnimationProgram)program).playAnimationLoop();
     }

@@ -23,6 +23,42 @@
             android:weightSum="1">
 
             <Button
+                android:id="@+id/connectBt1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="BT-1" />
+
+            <Button
+                android:id="@+id/connectBt2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="BT-2" />
+
+            <Button
+                android:id="@+id/connectBt3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="BT-3" />
+
+            <Button
+                android:id="@+id/connectBt4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="BT-4" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Button
                 android:id="@+id/PairedBtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

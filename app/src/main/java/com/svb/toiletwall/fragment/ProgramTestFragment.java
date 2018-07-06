@@ -41,6 +41,6 @@ public class ProgramTestFragment extends ProgramFramgment {
         program = new TestingProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
-                getConnectedThread());
+                getConnectionThreadPool());
     }
 }

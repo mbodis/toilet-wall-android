@@ -19,6 +19,9 @@
             android:id="@+id/nav_draw"
             android:title="@string/nav_draw" />
         <item
+            android:id="@+id/nav_acc_game"
+            android:title="@string/nav_acc_game" />
+        <item
             android:id="@+id/nav_sound"
             android:title="@string/nav_sound" />
         <item

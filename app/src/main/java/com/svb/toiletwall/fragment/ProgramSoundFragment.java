@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.svb.toiletwall.R;
-import com.svb.toiletwall.model.AudioDataReceivedListener;
-import com.svb.toiletwall.model.RecordingThread;
+import com.svb.toiletwall.model.audio.AudioDataReceivedListener;
+import com.svb.toiletwall.model.audio.RecordingThread;
 import com.svb.toiletwall.programs.DrawProgram;
 import com.svb.toiletwall.utils.MyShPrefs;
 import com.svb.toiletwall.view.ToiletView;

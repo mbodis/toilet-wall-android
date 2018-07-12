@@ -10,6 +10,7 @@
     <string name="nav_test">Test</string>
     <string name="nav_random">Random</string>
     <string name="nav_draw">Draw</string>
+    <string name="nav_acc_game">Acc game</string>
     <string name="nav_sound">Sound</string>
     <string name="nav_text">Text</string>
     <string name="nav_animation">Animation</string>

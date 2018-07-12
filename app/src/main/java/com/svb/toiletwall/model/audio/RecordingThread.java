@@ -1,4 +1,4 @@
-package com.svb.toiletwall.model;
+package com.svb.toiletwall.model.audio;
 
 /**
  * Created by mbodis on 1/14/18.

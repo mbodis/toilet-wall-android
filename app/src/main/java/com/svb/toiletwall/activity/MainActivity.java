@@ -37,6 +37,7 @@ import com.svb.toiletwall.R;
 import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.fragment.ConnectionFragment;
+import com.svb.toiletwall.fragment.ProgramAccGameFragment;
 import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
 import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.fragment.ProgramDrawFragment;
@@ -56,7 +57,7 @@ import java.util.UUID;
 import static com.svb.toiletwall.utils.MySupport.REQUEST_ENABLE_BT;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = MainActivity.class.getName();
 
@@ -65,11 +66,12 @@ public class MainActivity extends AppCompatActivity
     public static final int PAGE_TEST = 10;
     public static final int PAGE_RANDOM = 20;
     public static final int PAGE_DRAW = 30;
-    public static final int PAGE_SOUND = 40;
-    public static final int PAGE_ANIMATION = 50;
-    public static final int PAGE_ANIMATION_DETAIL = 51;
-    public static final int PAGE_TEXT = 60;
-    public static final int PAGE_SETTINGS = 70;
+    public static final int PAGE_ACC_GAME = 40;
+    public static final int PAGE_SOUND = 50;
+    public static final int PAGE_ANIMATION = 60;
+    public static final int PAGE_ANIMATION_DETAIL = 61;
+    public static final int PAGE_TEXT = 70;
+    public static final int PAGE_SETTINGS = 80;
     int lastPage = PAGE_CONNECTION;
 
     // Bt connection logic
@@ -135,6 +137,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_draw) {
             setFragmentAsMain(PAGE_DRAW, null);
 
+        } else if (id == R.id.nav_acc_game) {
+            setFragmentAsMain(PAGE_ACC_GAME, null);
+
         } else if (id == R.id.nav_sound) {
             setFragmentAsMain(PAGE_SOUND, null);
 
@@ -155,7 +160,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setupContent() {
         // set init page
-        setFragmentAsMain(PAGE_CONNECTION, null);
+        setFragmentAsMain(PAGE_ACC_GAME, null);
     }
 
     private void setupView() {
@@ -173,43 +178,37 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupViewDrawer() {
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        int menuIconSize = 22;
+        int[] ids = {
+                R.id.nav_connection,
+                R.id.nav_test,
+                R.id.nav_random,
+                R.id.nav_draw,
+                R.id.nav_acc_game,
+                R.id.nav_sound,
+                R.id.nav_animation,
+                R.id.nav_text,
+                R.id.nav_settings,
+        };
+        FontAwesome.Icon icons[] = {
+                FontAwesome.Icon.faw_bluetooth,
+                FontAwesome.Icon.faw_code,
+                FontAwesome.Icon.faw_code,
+                FontAwesome.Icon.faw_code,
+                FontAwesome.Icon.faw_code,
+                FontAwesome.Icon.faw_code,
+                FontAwesome.Icon.faw_code,
+                FontAwesome.Icon.faw_code,
+                FontAwesome.Icon.faw_cogs};
 
-        Menu mMenu = navigationView.getMenu();
-
-        MenuItem mainMenu = mMenu.findItem(R.id.nav_connection);
-        mainMenu.setIcon(new IconicsDrawable(this)
-                .icon(FontAwesome.Icon.faw_bluetooth)
-                .sizeDp(menuIconSize));
-        mainMenu = mMenu.findItem(R.id.nav_test);
-        mainMenu.setVisible(false);
-        mainMenu.setIcon(new IconicsDrawable(this)
-                .icon(FontAwesome.Icon.faw_code)
-                .sizeDp(menuIconSize));
-        mainMenu = mMenu.findItem(R.id.nav_random);
-        mainMenu.setIcon(new IconicsDrawable(this)
-                .icon(FontAwesome.Icon.faw_code)
-                .sizeDp(menuIconSize));
-        mainMenu = mMenu.findItem(R.id.nav_draw);
-        mainMenu.setIcon(new IconicsDrawable(this)
-                .icon(FontAwesome.Icon.faw_code)
-                .sizeDp(menuIconSize));
-        mainMenu = mMenu.findItem(R.id.nav_animation);
-        mainMenu.setIcon(new IconicsDrawable(this)
-                .icon(FontAwesome.Icon.faw_code)
-                .sizeDp(menuIconSize));
-        mainMenu = mMenu.findItem(R.id.nav_text);
-        mainMenu.setIcon(new IconicsDrawable(this)
-                .icon(FontAwesome.Icon.faw_code)
-                .sizeDp(menuIconSize));
-        mainMenu = mMenu.findItem(R.id.nav_settings);
-        mainMenu.setIcon(new IconicsDrawable(this)
-                .icon(FontAwesome.Icon.faw_cogs)
-                .sizeDp(menuIconSize));
+        for (int i = 0; i < ids.length; i++) {
+            MenuItem mainMenu = navigationView.getMenu().findItem(ids[i]);
+            mainMenu.setIcon(new IconicsDrawable(this)
+                    .icon(icons[i])
+                    .sizeDp(22));
+        }
     }
 
     public void setFragmentAsMain(int position, Bundle args) {
@@ -238,6 +237,11 @@ public class MainActivity extends AppCompatActivity
                         ProgramDrawFragment.newInstance(args), ProgramDrawFragment.TAG);
                 break;
 
+            case PAGE_ACC_GAME:
+                frTransaction.replace(R.id.container,
+                        ProgramAccGameFragment.newInstance(args), ProgramAccGameFragment.TAG);
+                break;
+
             case PAGE_SOUND:
                 frTransaction.replace(R.id.container,
                         ProgramSoundFragment.newInstance(args), ProgramSoundFragment.TAG);
@@ -264,7 +268,6 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
         lastPage = position;
-
         frTransaction.commit();
     }
 }

@@ -131,6 +131,7 @@ public class ProgramSoundFragment extends ProgramFramgment implements View.OnCli
 
     @Override
     void startProgram() {
+        // TODO implement - now just draw
         program = new DrawProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),

@@ -18,6 +18,7 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.svb.toiletwall.R;
@@ -31,6 +32,9 @@ import java.util.LinkedList;
  * used lib: https://github.com/newventuresoftware/WaveformControl/
  */
 public class WaveformView extends View {
+
+    public static final String TAG = WaveformView.class.getSimpleName();
+
     public static final int MODE_RECORDING = 1;
     public static final int MODE_PLAYBACK = 2;
 
@@ -106,7 +110,7 @@ public class WaveformView extends View {
         mFillPaint.setColor(mFillColor);
 
         mMarkerPaint = new Paint();
-        mMarkerPaint.setStyle(Paint.Style.STROKE);
+        mMarkerPaint.setStyle(Paint.Style.FILL);
         mMarkerPaint.setStrokeWidth(0);
         mMarkerPaint.setAntiAlias(true);
         mMarkerPaint.setColor(mMarkerColor);
@@ -133,30 +137,50 @@ public class WaveformView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-//        LinkedList<float[]> temp = mHistoricalData;
-//        if (mMode == MODE_RECORDING && temp != null) {
-//            brightness = colorDelta;
-//            for (float[] p : temp) {
-//                mStrokePaint.setAlpha(brightness);
-//                canvas.drawLines(p, mStrokePaint);
-//                brightness += colorDelta;
-//            }
-//        } else if (mMode == MODE_PLAYBACK) {
-//            if (mCachedWaveform != null) {
-//                canvas.drawPicture(mCachedWaveform);
-//            } else if (mCachedWaveformBitmap != null) {
-//                canvas.drawBitmap(mCachedWaveformBitmap, null, drawRect, null);
-//            }
-//            if (mMarkerPosition > -1 && mMarkerPosition < mAudioLength)
-//                canvas.drawLine(xStep * mMarkerPosition, 0, xStep * mMarkerPosition, height, mMarkerPaint);
-//        }
-        canvas.drawRect(new Rect(0,0,canvas.getWidth(), canvas.getHeight()), mTextPaint);
-        aaa(canvas);
+        //originalVisualization(canvas);
+        svbCustomVisualization(canvas);
     }
 
-    private void aaa(Canvas canvas){
+    private void originalVisualization(Canvas canvas){
+        LinkedList<float[]> temp = mHistoricalData;
+        if (mMode == MODE_RECORDING && temp != null) {
+            brightness = colorDelta;
+            for (float[] p : temp) {
+                mStrokePaint.setAlpha(brightness);
+                canvas.drawLines(p, mStrokePaint);
+                brightness += colorDelta;
+            }
+        } else if (mMode == MODE_PLAYBACK) {
+            if (mCachedWaveform != null) {
+                canvas.drawPicture(mCachedWaveform);
+            } else if (mCachedWaveformBitmap != null) {
+                canvas.drawBitmap(mCachedWaveformBitmap, null, drawRect, null);
+            }
+            if (mMarkerPosition > -1 && mMarkerPosition < mAudioLength)
+                canvas.drawLine(xStep * mMarkerPosition, 0, xStep * mMarkerPosition, height, mMarkerPaint);
+        }
+    }
+
+    /**
+     * NOTE customization
+     * @param canvas
+     */
+    private void svbCustomVisualization(Canvas canvas){
+        canvas.drawRect(new Rect(0,0,canvas.getWidth(), canvas.getHeight()), mTextPaint);
         if (mSamples != null) {
+            Log.d(TAG, "mSamples.length: " + mSamples.length);
+//            for (int i = 0; i < 16; i++) {
+//                double avg = 0;
+//                for (int a = 0; a < mSamples.length - 1; a++) {
+//                    if ( (a > (mSamples.length/16) * i)
+//                            && (a < (mSamples.length/16) * (i+1)) ){
+//                        avg += mSamples[a];
+//                    }
+//                }
+//                avg = avg / (mSamples.length/16);
+//                canvas.drawRect(i*20, 0f, (i+1)*20, (float)avg, mMarkerPaint);
+//
+//            }
             for (int i = 0; i < mSamples.length - 1; i++) {
                 for (int c = 0; c < 10; c++) {
                     canvas.drawLine(i*10+c, 0f, i*10+c, ((float) mSamples[i] / 2), mMarkerPaint);

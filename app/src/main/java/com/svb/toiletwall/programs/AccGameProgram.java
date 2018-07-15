@@ -1,5 +1,7 @@
 package com.svb.toiletwall.programs;
 
+import android.content.Context;
+
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.fragment.ProgramAccGameFragment;
 import com.svb.toiletwall.model.game_logic.Gate;
@@ -9,10 +11,12 @@ public class AccGameProgram extends ProgramIface {
     private int lastPosX = 7;
     private int lastPosY = 5;
     private Gate mGate;
-    
-    public AccGameProgram(int cols, int rows, ConnectionThreadPool mConnectionThreadPool) {
+    private Context ctx;
+
+    public AccGameProgram(Context ctx, int cols, int rows, ConnectionThreadPool mConnectionThreadPool) {
         super(cols, rows, mConnectionThreadPool, 50);
-        mGate = new Gate();
+        this.ctx = ctx;
+        mGate = new Gate(ctx);
     }
 
     /**
@@ -29,31 +33,52 @@ public class AccGameProgram extends ProgramIface {
         lastPosY = Math.max(0, 5 + (forwardBackward / (ProgramAccGameFragment.SENSOR_THRESHOLD_VALUE / (mToiletDisplay.getLedRows() / 2))));
     }
 
+    public void resetGame(){
+        mGate = new Gate(this.ctx);
+    }
+
     @Override
     synchronized protected void logicExecute() {
         mToiletDisplay.clearScreen();
 
-        if (mGate != null) {
+        if (mGate != null && mGate.isGameIsRunning()) {
             // move gate
             mGate.updateMove();
 
-            // draw gate
-            if (mGate.canBeDraw()) {
-                for (int i = 0; i < mToiletDisplay.getLedColumns(); i++) {
-                    mToiletDisplay.setScreenPx(
-                            i,
-                            mGate.getRow(),
-                            mGate.getCols()[i] == 1
-                    );
-                }
-            }
-        }
+            // draw date
+            drawGate();
 
+            // through gate
+            mGate.throughGate(lastPosX, lastPosY);
+
+            // detect gate collision
+            mGate.detectCollision(lastPosX, lastPosY);
+
+            // my position
+            drawMyPosition();
+        }
+    }
+
+    private void drawMyPosition(){
         // draw point
         mToiletDisplay.setScreenPx(
                 Math.min(15, lastPosX),
                 Math.min(11, lastPosY),
                 true
         );
+    }
+
+    private void drawGate(){
+        // draw gate
+        if (mGate.canBeDraw()) {
+            for (int i = 0; i < mToiletDisplay.getLedColumns(); i++) {
+                mToiletDisplay.setScreenPx(
+                        i,
+                        mGate.getRow(),
+                        mGate.getCols()[i] == 1
+                );
+            }
+        }
+
     }
 }

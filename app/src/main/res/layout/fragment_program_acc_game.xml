@@ -19,4 +19,26 @@
         android:layout_above="@+id/bottomPanel"
         android:layout_below="@id/title" />
 
+    <LinearLayout
+        android:id="@id/bottomPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/drawPanel"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/resetGame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="{faw_play} reset game" />
+
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

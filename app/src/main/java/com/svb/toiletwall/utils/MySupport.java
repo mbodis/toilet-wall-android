@@ -2,7 +2,9 @@ package com.svb.toiletwall.utils;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Vibrator;
 import android.widget.Toast;
 
 /**
@@ -47,6 +49,12 @@ public class MySupport {
         return true;
     }
 
+    public static void doVibrate(Context ctx, long milis) {
+        Vibrator v = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
+        if (v != null) {
+            v.vibrate(milis);
+        }
+    }
 }
 
 

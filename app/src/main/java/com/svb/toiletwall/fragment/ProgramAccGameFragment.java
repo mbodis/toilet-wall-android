@@ -64,12 +64,17 @@ public class ProgramAccGameFragment extends ProgramFramgment implements View.OnC
             case R.id.drawClear:
                 drawView.getToiletDisplay().clearScreen();
                 break;
+
+            case R.id.resetGame:
+                ((AccGameProgram)program).resetGame();
+                break;
         }
     }
 
     @Override
     void startProgram() {
         program = new AccGameProgram(
+                getActivity(),
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
                 getConnectionThreadPool());
@@ -112,6 +117,7 @@ public class ProgramAccGameFragment extends ProgramFramgment implements View.OnC
 
     private void setupView(View mView) {
         drawView = (ToiletView) mView.findViewById(R.id.drawView);
+        mView.findViewById(R.id.resetGame).setOnClickListener(this);
     }
 
     private void registerSensor() {

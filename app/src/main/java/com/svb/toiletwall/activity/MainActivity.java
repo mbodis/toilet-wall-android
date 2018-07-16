@@ -2,16 +2,8 @@ package com.svb.toiletwall.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.LayoutInflaterCompat;
@@ -19,22 +11,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.svb.toiletwall.R;
-import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.fragment.ConnectionFragment;
 import com.svb.toiletwall.fragment.ProgramAccGameFragment;
@@ -43,18 +25,8 @@ import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.fragment.ProgramDrawFragment;
 import com.svb.toiletwall.fragment.ProgramRandomFragment;
 import com.svb.toiletwall.fragment.ProgramSoundFragment;
-import com.svb.toiletwall.fragment.ProgramTestFragment;
 import com.svb.toiletwall.fragment.ProgramTextFragment;
 import com.svb.toiletwall.fragment.SettingsFragment;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-
-import static com.svb.toiletwall.utils.MySupport.REQUEST_ENABLE_BT;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -63,15 +35,14 @@ public class MainActivity extends AppCompatActivity
 
     // menu
     public static final int PAGE_CONNECTION = 0;
-    public static final int PAGE_TEST = 10;
-    public static final int PAGE_RANDOM = 20;
-    public static final int PAGE_DRAW = 30;
-    public static final int PAGE_ACC_GAME = 40;
-    public static final int PAGE_SOUND = 50;
-    public static final int PAGE_ANIMATION = 60;
-    public static final int PAGE_ANIMATION_DETAIL = 61;
-    public static final int PAGE_TEXT = 70;
-    public static final int PAGE_SETTINGS = 80;
+    public static final int PAGE_RANDOM = 10;
+    public static final int PAGE_DRAW = 20;
+    public static final int PAGE_ACC_GAME = 30;
+    public static final int PAGE_SOUND = 40;
+    public static final int PAGE_ANIMATION = 50;
+    public static final int PAGE_ANIMATION_DETAIL = 51;
+    public static final int PAGE_TEXT = 60;
+    public static final int PAGE_SETTINGS = 70;
     int lastPage = PAGE_CONNECTION;
 
     // Bt connection logic
@@ -128,9 +99,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_connection) {
             setFragmentAsMain(PAGE_CONNECTION, null);
 
-        } else if (id == R.id.nav_test) {
-            setFragmentAsMain(PAGE_TEST, null);
-
         } else if (id == R.id.nav_random) {
             setFragmentAsMain(PAGE_RANDOM, null);
 
@@ -183,7 +151,6 @@ public class MainActivity extends AppCompatActivity
 
         int[] ids = {
                 R.id.nav_connection,
-                R.id.nav_test,
                 R.id.nav_random,
                 R.id.nav_draw,
                 R.id.nav_acc_game,
@@ -194,7 +161,6 @@ public class MainActivity extends AppCompatActivity
         };
         FontAwesome.Icon icons[] = {
                 FontAwesome.Icon.faw_bluetooth,
-                FontAwesome.Icon.faw_code,
                 FontAwesome.Icon.faw_code,
                 FontAwesome.Icon.faw_code,
                 FontAwesome.Icon.faw_code,
@@ -220,11 +186,6 @@ public class MainActivity extends AppCompatActivity
             case PAGE_CONNECTION:
                 frTransaction.replace(R.id.container,
                         ConnectionFragment.newInstance(args), ConnectionFragment.TAG);
-                break;
-
-            case PAGE_TEST:
-                frTransaction.replace(R.id.container,
-                        ProgramTestFragment.newInstance(args), ProgramTestFragment.TAG);
                 break;
 
             case PAGE_RANDOM:

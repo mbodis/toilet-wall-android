@@ -137,8 +137,8 @@ public class WaveformView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //originalVisualization(canvas);
-        svbCustomVisualization(canvas);
+        originalVisualization(canvas);
+        //svbCustomVisualization(canvas);
     }
 
     private void originalVisualization(Canvas canvas){
@@ -168,7 +168,7 @@ public class WaveformView extends View {
     private void svbCustomVisualization(Canvas canvas){
         canvas.drawRect(new Rect(0,0,canvas.getWidth(), canvas.getHeight()), mTextPaint);
         if (mSamples != null) {
-            Log.d(TAG, "mSamples.length: " + mSamples.length);
+            //Log.d(TAG, "mSamples.length: " + mSamples.length);
 //            for (int i = 0; i < 16; i++) {
 //                double avg = 0;
 //                for (int a = 0; a < mSamples.length - 1; a++) {

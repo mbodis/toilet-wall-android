@@ -81,7 +81,7 @@ public class ToiletDisplay {
     }
 
     public void setScreenPx(int col, int row, boolean value) {
-        if (col<ledColumns && row <ledRows) {
+        if (col>=0 && col<ledColumns && row >=0 && row <ledRows) {
             display[col][row] = value;
         }
     }

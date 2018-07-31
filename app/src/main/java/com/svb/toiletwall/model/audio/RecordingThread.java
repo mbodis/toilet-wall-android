@@ -23,6 +23,8 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import com.svb.toiletwall.utils.SamplingUtils;
+
 public class RecordingThread {
     private static final String LOG_TAG = RecordingThread.class.getSimpleName();
     private static final int SAMPLE_RATE = 44100;
@@ -93,6 +95,7 @@ public class RecordingThread {
         long shortsRead = 0;
         while (mShouldContinue) {
             int numberOfShort = record.read(audioBuffer, 0, audioBuffer.length);
+            //Log.i("XXX", "------------------------------ " + audioBuffer.length + " " + SamplingUtils.rootMeanSquared(audioBuffer));
             shortsRead += numberOfShort;
 
             // Notify waveform

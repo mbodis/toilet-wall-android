@@ -22,4 +22,15 @@ public final class SamplingUtils {
 
         return newData;
     }
+
+    public static double rootMeanSquared(short[] nums)
+    {
+        double ms = 0;
+        for (int i = 0; i < nums.length; i++)
+        {
+            ms += nums[i] * nums[i];
+        }
+        ms /= nums.length;
+        return Math.sqrt(ms);
+    }
 }

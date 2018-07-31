@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,9 @@ import android.view.ViewGroup;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.model.audio.AudioDataReceivedListener;
 import com.svb.toiletwall.model.audio.RecordingThread;
-import com.svb.toiletwall.programs.DrawProgram;
+import com.svb.toiletwall.programs.SoundProgram;
 import com.svb.toiletwall.utils.MyShPrefs;
+import com.svb.toiletwall.utils.SamplingUtils;
 import com.svb.toiletwall.view.ToiletView;
 import com.svb.toiletwall.view.WaveformView;
 
@@ -35,6 +35,7 @@ public class ProgramSoundFragment extends ProgramFramgment implements View.OnCli
     private ToiletView drawView;
     private WaveformView mRealtimeWaveformView;
     private RecordingThread mRecordingThread;
+
 
     public static ProgramSoundFragment newInstance(Bundle args) {
         ProgramSoundFragment fragment = new ProgramSoundFragment();
@@ -63,7 +64,6 @@ public class ProgramSoundFragment extends ProgramFramgment implements View.OnCli
     private void setupView(View mView){
         drawView = (ToiletView) mView.findViewById(R.id.drawView);
         mRealtimeWaveformView = (WaveformView) mView.findViewById(R.id.waveformView);
-        mView.findViewById(R.id.drawClear).setOnClickListener(this);
         mView.findViewById(R.id.start).setOnClickListener(this);
     }
 
@@ -71,8 +71,9 @@ public class ProgramSoundFragment extends ProgramFramgment implements View.OnCli
         mRecordingThread = new RecordingThread(new AudioDataReceivedListener() {
             @Override
             public void onAudioDataReceived(short[] data) {
-                Log.d(TAG, "onAudioDataReceived: " + data.length);
+                //Log.d(TAG, "onAudioDataReceived: " + data.length);
                 mRealtimeWaveformView.setSamples(data);
+                ((SoundProgram)program).addNewValue((int)SamplingUtils.rootMeanSquared(data));
             }
         });
     }
@@ -80,9 +81,6 @@ public class ProgramSoundFragment extends ProgramFramgment implements View.OnCli
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.drawClear:
-                drawView.getToiletDisplay().clearScreen();
-                break;
 
             case R.id.start:
                 if (!mRecordingThread.recording()) {
@@ -131,8 +129,7 @@ public class ProgramSoundFragment extends ProgramFramgment implements View.OnCli
 
     @Override
     void startProgram() {
-        // TODO implement - now just draw
-        program = new DrawProgram(
+        program = new SoundProgram(
                 MyShPrefs.getBlockCols(getActivity()),
                 MyShPrefs.getBlockRows(getActivity()),
                 getConnectionThreadPool());

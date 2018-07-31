@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setupContent() {
         // set init page
-        setFragmentAsMain(PAGE_ACC_GAME, null);
+        setFragmentAsMain(PAGE_CONNECTION, null);
     }
 
     private void setupView() {

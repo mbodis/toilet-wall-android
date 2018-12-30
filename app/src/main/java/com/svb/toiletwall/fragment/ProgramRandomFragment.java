@@ -13,7 +13,7 @@ import com.svb.toiletwall.utils.MyShPrefs;
  * Created by mbodis on 9/24/17.
  */
 
-public class ProgramRandomFragment extends ProgramFramgment {
+public class ProgramRandomFragment extends ProgramFragment {
 
     public static final String TAG = ProgramRandomFragment.class.getName();
 

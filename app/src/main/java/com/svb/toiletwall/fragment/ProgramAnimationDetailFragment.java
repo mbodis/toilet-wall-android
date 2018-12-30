@@ -40,7 +40,7 @@ import org.greenrobot.greendao.database.Database;
 /**
  * Created by mbodis on 9/25/17.
  */
-public class ProgramAnimationDetailFragment extends ProgramFramgment implements View.OnClickListener, View.OnLongClickListener {
+public class ProgramAnimationDetailFragment extends ProgramFragment implements View.OnClickListener, View.OnLongClickListener {
 
     public static final String TAG = ProgramAnimationFragment.class.getName();
     public static final String ARG_ANIMATION_ID = "animationId";

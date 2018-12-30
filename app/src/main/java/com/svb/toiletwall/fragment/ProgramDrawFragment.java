@@ -14,7 +14,7 @@ import com.svb.toiletwall.view.ToiletView;
  * Created by mbodis on 9/24/17.
  */
 
-public class ProgramDrawFragment extends ProgramFramgment implements View.OnClickListener{
+public class ProgramDrawFragment extends ProgramFragment implements View.OnClickListener{
 
     public static final String TAG = ProgramDrawFragment.class.getName();
 

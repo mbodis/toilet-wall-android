@@ -26,7 +26,7 @@ import com.svb.toiletwall.view.WaveformView;
  * used lib: https://github.com/newventuresoftware/WaveformControl/
  */
 
-public class ProgramSoundFragment extends ProgramFramgment implements View.OnClickListener{
+public class ProgramSoundFragment extends ProgramFragment implements View.OnClickListener{
 
     public static final String TAG = ProgramSoundFragment.class.getName();
 

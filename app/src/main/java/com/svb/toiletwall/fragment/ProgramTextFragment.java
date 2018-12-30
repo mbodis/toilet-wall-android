@@ -25,7 +25,7 @@ import static java.lang.Thread.sleep;
  * Created by mbodis on 10/15/17.
  */
 
-public class ProgramTextFragment extends ProgramFramgment{
+public class ProgramTextFragment extends ProgramFragment {
 
     public static final String TAG = ProgramTextFragment.class.getName();
 

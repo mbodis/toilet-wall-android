@@ -11,7 +11,7 @@ import com.svb.toiletwall.programs.ProgramIface;
  * Created by mbodis on 9/24/17.
  */
 
-public abstract class ProgramFramgment extends Fragment {
+public abstract class ProgramFragment extends Fragment {
 
     protected ProgramIface program;
 

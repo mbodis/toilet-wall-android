@@ -12,13 +12,12 @@ import android.view.ViewGroup;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.programs.AccGameProgram;
-import com.svb.toiletwall.programs.DrawProgram;
 import com.svb.toiletwall.utils.MyShPrefs;
 import com.svb.toiletwall.view.ToiletView;
 
 import java.util.List;
 
-public class ProgramAccGameFragment extends ProgramFramgment implements View.OnClickListener, SensorEventListener {
+public class ProgramAccGameFragment extends ProgramFragment implements View.OnClickListener, SensorEventListener {
 
     public static final String TAG = ProgramAccGameFragment.class.getName();
 

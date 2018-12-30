@@ -138,7 +138,7 @@ public class ToiletView extends SurfaceView implements SurfaceHolder.Callback, V
 
     public void startDrawImage() {
         canvasThread.setRunning(true);
-        canvasThread.start();
+            canvasThread.start();
     }
 
     public void setToiletDisplay(ToiletDisplay mToiletDisplay) {

@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.fragment.ConnectionFragment;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity
         // setup fonts
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
             LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
+        } else {
+            LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         }
 
         super.onCreate(savedInstanceState);
@@ -66,12 +69,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         if (mConnectionThreadPool != null) {
             mConnectionThreadPool.cancel();
         }
-        super.onDestroy();
+        super.onStop();
     }
+
 
     public ConnectionThreadPool getConnectedThreadPool() {
         return mConnectionThreadPool;

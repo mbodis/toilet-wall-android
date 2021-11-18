@@ -9,17 +9,16 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Picture;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+
+import androidx.core.content.ContextCompat;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.utils.AudioUtils;

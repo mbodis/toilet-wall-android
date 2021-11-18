@@ -3,7 +3,6 @@ package com.svb.toiletwall.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.TypefaceSpan;
@@ -12,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by mbodis on 7/4/17.

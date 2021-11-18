@@ -1,7 +1,5 @@
 package com.svb.toiletwall.model;
 
-import android.util.Log;
-
 import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.model.db.AnimationFrame;

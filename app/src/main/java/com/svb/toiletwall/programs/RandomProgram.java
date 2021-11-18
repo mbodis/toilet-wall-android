@@ -1,8 +1,5 @@
 package com.svb.toiletwall.programs;
 
-import android.content.Intent;
-
-import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 
 import java.util.Random;

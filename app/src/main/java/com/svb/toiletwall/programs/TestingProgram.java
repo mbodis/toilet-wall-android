@@ -1,8 +1,6 @@
 package com.svb.toiletwall.programs;
 
-import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
-import com.svb.toiletwall.model.ToiletDisplay;
 
 /**
  * Created by mbodis on 8/19/17.

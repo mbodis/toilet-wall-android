@@ -3,7 +3,6 @@ package com.svb.toiletwall.fragment;
 import android.app.Fragment;
 
 import com.svb.toiletwall.activity.MainActivity;
-import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 import com.svb.toiletwall.programs.ProgramIface;
 

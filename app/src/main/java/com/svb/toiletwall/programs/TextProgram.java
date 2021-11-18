@@ -1,6 +1,5 @@
 package com.svb.toiletwall.programs;
 
-import com.svb.toiletwall.bluetooth.ConnectedThread;
 import com.svb.toiletwall.bluetooth.ConnectionThreadPool;
 
 /**

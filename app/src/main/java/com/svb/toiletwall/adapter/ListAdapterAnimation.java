@@ -3,14 +3,16 @@ package com.svb.toiletwall.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.activity.MainActivity;
@@ -72,8 +74,9 @@ public class ListAdapterAnimation extends RecyclerView.Adapter<ListAdapterAnimat
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int a) {
 
+        final int position = a;
         final Animation mAnimation = list.get(position);
 
         holder.animName.setText(mAnimation.getName());

@@ -186,9 +186,9 @@ public class ProgramTextFragment extends ProgramFragment {
             for (int c = 0; c < program.getToiletDisplay().getLedColumns(); c++) {
 
                 int rgb = bmp.getPixel(c, r);
-                int red = android.graphics.Color.red(rgb);
-                int green = android.graphics.Color.green(rgb);
-                int blue = android.graphics.Color.blue(rgb);
+                int red = Color.red(rgb);
+                int green = Color.green(rgb);
+                int blue = Color.blue(rgb);
 
                 boolean pxOn = !(red == 0 && green == 0 && blue == 0);
 
@@ -238,9 +238,9 @@ public class ProgramTextFragment extends ProgramFragment {
             for (int c = 0; c < 100; c++) {
 
                 int rgb = bmp.getPixel(c, r);
-                int red = android.graphics.Color.red(rgb);
-                int green = android.graphics.Color.green(rgb);
-                int blue = android.graphics.Color.blue(rgb);
+                int red = Color.red(rgb);
+                int green = Color.green(rgb);
+                int blue = Color.blue(rgb);
 
                 boolean pxOn = !(red == 0 && green == 0 && blue == 0);
                 d += pxOn ? "0" : "1";

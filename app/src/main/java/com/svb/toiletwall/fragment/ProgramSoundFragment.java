@@ -2,14 +2,15 @@ package com.svb.toiletwall.fragment;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.model.audio.AudioDataReceivedListener;
 import com.svb.toiletwall.model.audio.RecordingThread;

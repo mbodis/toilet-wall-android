@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.svb.toiletwall.R;
 import com.svb.toiletwall.application.App;
 import com.svb.toiletwall.fragment.ProgramAnimationDetailFragment;
-import com.svb.toiletwall.fragment.ProgramAnimationFragment;
 import com.svb.toiletwall.model.db.Animation;
 import com.svb.toiletwall.model.db.AnimationDao;
 import com.svb.toiletwall.model.db.DaoSession;
